@@ -1,0 +1,29 @@
+post:
+  tags:
+    - Login
+  summary: Login user
+  operationId: login
+  description: i'll add it later
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - data
+          properties:
+            data:
+              $ref: "#/components/schemas/Login"
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/AuthToken"
+    '400':
+      description: Bad request.
+    '500':
+      description: Internal server error.

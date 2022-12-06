@@ -1,0 +1,16 @@
+allOf:
+  - $ref: "#/components/schemas/LoginKey"
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        type: object
+        required:
+          - email
+          - password
+        properties:
+          email:
+            type: string
+          password:
+            type: string
