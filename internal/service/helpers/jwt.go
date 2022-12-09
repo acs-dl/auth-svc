@@ -3,41 +3,40 @@ package helpers
 import (
 	"errors"
 	"github.com/golang-jwt/jwt"
-	"github.com/mhrynenko/jwt_service/internal/data"
-	"time"
+	"gitlab.com/distributed_lab/Auth/internal/data"
 )
 
-const tmpSecret = "my secret key"
-
-func GenerateAccessToken(user data.User) (string, error) {
+func GenerateAccessToken(user data.User, expires int64, secret string, permissions string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	claims["exp"] = time.Now().Add(10 * time.Minute).Unix()
+	claims["exp"] = expires
 	claims["owner_id"] = user.Id
 	claims["email"] = user.Email
+	claims["module.permission"] = permissions
 
-	return token.SignedString([]byte(tmpSecret))
+	return token.SignedString([]byte(secret))
 }
 
-func GenerateRefreshToken(user data.User) (string, error, jwt.MapClaims) {
+func GenerateRefreshToken(user data.User, expires int64, secret string, permissions string) (string, error, jwt.MapClaims) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	claims["exp"] = time.Now().Add(24 * time.Hour).Unix()
+	claims["exp"] = expires
 	claims["owner_id"] = user.Id
 	claims["email"] = user.Email
+	claims["module.permission"] = permissions
 
-	signedToken, err := token.SignedString([]byte(tmpSecret))
+	signedToken, err := token.SignedString([]byte(secret))
 
 	return signedToken, err, claims
 }
 
-func CheckRefreshToken(tokenStr string, ownerId int64) error {
+func CheckRefreshToken(tokenStr string, ownerId int64, secret string) error {
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
 
-		return []byte(tmpSecret), nil
+		return []byte(secret), nil
 	})
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
@@ -51,4 +50,20 @@ func CheckRefreshToken(tokenStr string, ownerId int64) error {
 	}
 
 	return err
+}
+
+func ParseJwtToken(tokenStr string, secret string) (jwt.MapClaims, error) {
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+
+		return []byte(secret), nil
+	})
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, nil
+	}
+
+	return nil, err
 }

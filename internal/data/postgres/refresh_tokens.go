@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/fatih/structs"
-	"github.com/mhrynenko/jwt_service/internal/data"
+	"gitlab.com/distributed_lab/Auth/internal/data"
 	"gitlab.com/distributed_lab/kit/pgdb"
 	"gitlab.com/distributed_lab/logan/v3/errors"
 )
@@ -61,7 +61,7 @@ func (q *RefreshTokensQ) Delete(token string) error {
 
 	affectedRows, _ := result.RowsAffected()
 	if affectedRows == 0 {
-		return errors.New("No blob with such ID")
+		return errors.New("no such token")
 	}
 
 	return nil

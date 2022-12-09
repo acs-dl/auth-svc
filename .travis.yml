@@ -10,7 +10,7 @@ services:
 env:
   global:
   - PROJECT: tokend
-  - IMAGE_NAME: github.com/mhrynenko/jwt-service
+  - IMAGE_NAME: gitlab.com/distributed_lab/Auth
 
 
 script:

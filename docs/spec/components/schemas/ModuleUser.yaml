@@ -1,0 +1,16 @@
+allOf:
+  - $ref: "#/components/schemas/ModuleUserKey"
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        type: object
+        required:
+          - user_id
+          - module_id
+        properties:
+          user_id:
+            type: int64
+          module_id:
+            type: int64

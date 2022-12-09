@@ -1,8 +1,8 @@
 package cli
 
 import (
-	"github.com/mhrynenko/jwt_service/internal/config"
-	"github.com/mhrynenko/jwt_service/internal/service"
+	"gitlab.com/distributed_lab/Auth/internal/config"
+	"gitlab.com/distributed_lab/Auth/internal/service"
 
 	"github.com/alecthomas/kingpin"
 	"gitlab.com/distributed_lab/kit/kv"
@@ -21,7 +21,7 @@ func Run(args []string) bool {
 	cfg := config.New(kv.MustFromEnv())
 	log = cfg.Log()
 
-	app := kingpin.New("jwt_service", "")
+	app := kingpin.New("Auth", "")
 
 	runCmd := app.Command("run", "run command")
 	serviceCmd := runCmd.Command("service", "run service") // you can insert custom help

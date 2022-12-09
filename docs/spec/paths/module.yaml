@@ -1,0 +1,29 @@
+post:
+  tags:
+    - Module
+  summary: Create module
+  operationId: addModule
+  description: i'll add it later
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - data
+          properties:
+            data:
+              $ref: "#/components/schemas/ModulePermission"
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/ModulePermission"
+    '400':
+      description: Bad request.
+    '500':
+      description: Internal server error.

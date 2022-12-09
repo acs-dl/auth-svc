@@ -11,11 +11,33 @@ VALUES ('max@mail', '$2b$10$ggulBRryhFGQEbaPX76oGeZ1EgduENOtSZWSe3d693z27X33Zt4X
 
 create table refresh_tokens (
     token text primary key,
-    owner_id int references users (id) on delete cascade,
-    valid_date int
+    owner_id int not null references users (id) on delete cascade,
+    valid_date int not null
 );
+
+create table amounts (
+    access int not null default 0,
+    refresh int not null default 0
+);
+INSERT INTO amounts (access, refresh)
+VALUES (0, 0);
+
+create table modules (
+    id bigserial primary key,
+    module_name text not null,
+    permission text not null
+);
+
+create table modules_users (
+    module_id int not null,
+    user_id int not null
+);
+
 
 -- +migrate Down
 
 drop table refresh_tokens;
+drop table modules_users;
 drop table users;
+drop table amounts;
+drop table modules;

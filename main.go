@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/mhrynenko/jwt_service/internal/cli"
+	"gitlab.com/distributed_lab/Auth/internal/cli"
 )
 
 func main() {

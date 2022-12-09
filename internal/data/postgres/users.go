@@ -3,7 +3,7 @@ package postgres
 import (
 	"database/sql"
 	sq "github.com/Masterminds/squirrel"
-	"github.com/mhrynenko/jwt_service/internal/data"
+	"gitlab.com/distributed_lab/Auth/internal/data"
 	"gitlab.com/distributed_lab/kit/pgdb"
 )
 

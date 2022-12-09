@@ -1,0 +1,51 @@
+parameters:
+  - name: name
+    in: path
+    required: true
+    schema:
+      type: string
+
+get:
+  tags:
+    - Module
+  summary: Get permissions
+  operationId: getModulePermissions
+  description: i'll add it later
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/ModulePermission"
+    '400':
+      description: Bad request.
+    '500':
+      description: Internal server error.
+delete:
+  tags:
+    - Module
+  summary: Delete module
+  operationId: deleteModulePermissions
+  description: i'll add it later
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          type: object
+          properties:
+            data:
+              type: object
+              properties:
+                amount:
+                  type: int
+                  description: amount of delete permissions
+    '400':
+      description: Bad request.
+    '500':
+      description: Internal server error.

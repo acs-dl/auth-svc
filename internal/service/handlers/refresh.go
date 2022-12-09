@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"github.com/mhrynenko/jwt_service/internal/data"
-	"github.com/mhrynenko/jwt_service/internal/service/helpers"
-	"github.com/mhrynenko/jwt_service/internal/service/requests"
-	"github.com/mhrynenko/jwt_service/resources"
+	"gitlab.com/distributed_lab/Auth/internal/data"
+	"gitlab.com/distributed_lab/Auth/internal/service/helpers"
+	"gitlab.com/distributed_lab/Auth/internal/service/requests"
+	"gitlab.com/distributed_lab/Auth/resources"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
 	"net/http"
@@ -25,7 +25,9 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = helpers.CheckRefreshToken(refreshToken.Token, refreshToken.OwnerId)
+	jwt := JwtParams(r)
+
+	err = helpers.CheckRefreshToken(refreshToken.Token, refreshToken.OwnerId, jwt.Secret)
 	if err != nil {
 		Log(r).WithError(err).Info("something wrong with refresh token")
 		ape.RenderErr(w, problems.BadRequest(err)...)
@@ -39,9 +41,29 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	refresh, err, claims := helpers.GenerateRefreshToken(*user)
+	permissions, err := ModulesUsersQ(r).FilterByUserId(user.Id).Select()
+	if err != nil {
+		Log(r).WithError(err).Error(err, "failed to get user permissions")
+		ape.RenderErr(w, problems.InternalError())
+		return
+	}
+
+	permissionsString, err := helpers.CreatePermissionsString(permissions, ModulesQ(r))
+	if err != nil {
+		Log(r).WithError(err).Error(err, "failed to get create user permissions string")
+		ape.RenderErr(w, problems.InternalError())
+		return
+	}
+
+	refresh, err, claims := helpers.GenerateRefreshToken(*user, helpers.ParseToUnix(jwt.RefreshLife), jwt.Secret, permissionsString)
 	if err != nil {
 		Log(r).WithError(err).Error(err, "failed to create refresh token")
+		ape.RenderErr(w, problems.InternalError())
+		return
+	}
+	err = AmountsQ(r).Add("refresh")
+	if err != nil {
+		Log(r).WithError(err).Error(err, "failed to add counter")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}

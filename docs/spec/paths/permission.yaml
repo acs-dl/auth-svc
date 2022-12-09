@@ -1,0 +1,61 @@
+post:
+  tags:
+    - Permission
+  summary: Add permission
+  operationId: addPermission
+  description: i'll add it later
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - data
+          properties:
+            data:
+              $ref: "#/components/schemas/ModuleUser"
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/ModuleUser"
+    '400':
+      description: Bad request.
+    '500':
+      description: Internal server error.
+delete:
+  tags:
+    - Permission
+  summary: Remove permission
+  operationId: deletePermission
+  description: i'll add it later
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - data
+          properties:
+            data:
+              $ref: "#/components/schemas/ModuleUser"
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          type: object
+          properties:
+            data:
+              properties:
+                amount:
+                  type: int
+                  description: amount of delete permissions
+    '400':
+      description: Bad request.
+    '500':
+      description: Internal server error.

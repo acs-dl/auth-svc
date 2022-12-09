@@ -3,7 +3,7 @@ package requests
 import (
 	"encoding/json"
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/mhrynenko/jwt_service/resources"
+	"gitlab.com/distributed_lab/Auth/resources"
 	"gitlab.com/distributed_lab/logan/v3/errors"
 	"net/http"
 )

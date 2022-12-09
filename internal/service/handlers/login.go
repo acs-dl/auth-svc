@@ -1,11 +1,10 @@
 package handlers
 
 import (
-	"fmt"
-	"github.com/mhrynenko/jwt_service/internal/data"
-	"github.com/mhrynenko/jwt_service/internal/service/helpers"
-	"github.com/mhrynenko/jwt_service/internal/service/requests"
-	"github.com/mhrynenko/jwt_service/resources"
+	"gitlab.com/distributed_lab/Auth/internal/data"
+	"gitlab.com/distributed_lab/Auth/internal/service/helpers"
+	"gitlab.com/distributed_lab/Auth/internal/service/requests"
+	"gitlab.com/distributed_lab/Auth/resources"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
 	"golang.org/x/crypto/bcrypt"
@@ -33,21 +32,48 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	access, err := helpers.GenerateAccessToken(*user)
+	jwt := JwtParams(r)
+
+	permissions, err := ModulesUsersQ(r).FilterByUserId(user.Id).Select()
+	if err != nil {
+		Log(r).WithError(err).Error(err, "failed to get user permissions")
+		ape.RenderErr(w, problems.InternalError())
+		return
+	}
+
+	permissionsString, err := helpers.CreatePermissionsString(permissions, ModulesQ(r))
+	if err != nil {
+		Log(r).WithError(err).Error(err, "failed to get create user permissions string")
+		ape.RenderErr(w, problems.InternalError())
+		return
+	}
+
+	access, err := helpers.GenerateAccessToken(*user, helpers.ParseToUnix(jwt.AccessLife), jwt.Secret, permissionsString)
 	if err != nil {
 		Log(r).WithError(err).Error(err, "failed to create access token")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
-
-	refresh, err, claims := helpers.GenerateRefreshToken(*user)
+	err = AmountsQ(r).Add("access")
 	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to create refresh token")
+		Log(r).WithError(err).Error(err, "failed to add counter user")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
-	fmt.Println(claims["exp"])
+	refresh, err, claims := helpers.GenerateRefreshToken(*user, helpers.ParseToUnix(jwt.RefreshLife), jwt.Secret, permissionsString)
+	if err != nil {
+		Log(r).WithError(err).Error(err, "failed to create refresh")
+		ape.RenderErr(w, problems.InternalError())
+		return
+	}
+	err = AmountsQ(r).Add("refresh")
+	if err != nil {
+		Log(r).WithError(err).Error(err, "failed to add counter")
+		ape.RenderErr(w, problems.InternalError())
+		return
+	}
+
 	newRefreshToken := data.RefreshToken{
 		Token:     refresh,
 		OwnerId:   claims["owner_id"].(int64),
