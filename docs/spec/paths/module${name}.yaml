@@ -10,7 +10,8 @@ get:
     - Module
   summary: Get permissions
   operationId: getModulePermissions
-  description: i'll add it later
+  description: Endpoint for getting permission by module name. It takes 'name' in path as the name of module. In case 
+    of success returns array with module and permission fields in each instance.
   responses:
     '200':
       description: Success
@@ -23,29 +24,20 @@ get:
               items:
                 $ref: "#/components/schemas/ModulePermission"
     '400':
-      description: Bad request.
+      description: Bad request. Bad request. It may be caused by lack of some fields in request
     '500':
-      description: Internal server error.
+      description: Internal server error. May be because of problems with database (getting some data)
 delete:
   tags:
     - Module
   summary: Delete module
   operationId: deleteModulePermissions
-  description: i'll add it later
+  description: Endpoint for deleting module by its name. It takes 'name' in path as the name of module. In case of
+    success returns status code 200.
   responses:
     '200':
       description: Success
-      content:
-        application/json:
-          type: object
-          properties:
-            data:
-              type: object
-              properties:
-                amount:
-                  type: int
-                  description: amount of delete permissions
     '400':
-      description: Bad request.
+      description: Bad request. It may be caused by lack of some fields in request
     '500':
-      description: Internal server error.
+      description: Internal server error. May be because of problems with database (deleting some data)

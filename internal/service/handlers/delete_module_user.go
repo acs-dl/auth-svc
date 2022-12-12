@@ -23,7 +23,7 @@ func DeleteModuleUser(w http.ResponseWriter, r *http.Request) {
 
 	err = ModulesUsersQ(r).Delete(moduleUser)
 	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to add module")
+		Log(r).WithError(err).Error(err, "failed to remove permission for user")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}

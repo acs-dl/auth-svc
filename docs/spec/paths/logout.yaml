@@ -3,7 +3,8 @@ post:
     - Logout
   summary: Logout user
   operationId: logout
-  description: i'll add it later
+  description: Endpoint for signing out service. It takes refresh token and in case of success just remove
+    refresh token from the relevant database.
   requestBody:
     content:
       application/json:
@@ -18,6 +19,6 @@ post:
     '200':
       description: Success
     '400':
-      description: Bad request.
+      description: Bad request. It may be caused by lack of some fields in request or wrong token
     '500':
-      description: Internal server error.
+      description: Internal server error. May be because of problems with database (getting, deleting some data)

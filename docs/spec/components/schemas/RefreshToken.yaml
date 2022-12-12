@@ -1,5 +1,5 @@
 allOf:
-  - $ref: "#/components/schemas/RefreshKey"
+  - $ref: "#/components/schemas/RefreshTokenKey"
   - type: object
     required:
       - attributes

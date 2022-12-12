@@ -3,7 +3,8 @@ post:
     - Permission
   summary: Add permission
   operationId: addPermission
-  description: i'll add it later
+  description: Endpoint for connecting user and permission. It takes 'user_id' and 'module_id' and creates new instance 
+    in relevant database. In case of success just returns created instance.
   requestBody:
     content:
       application/json:
@@ -24,9 +25,9 @@ post:
             data:
               $ref: "#/components/schemas/ModuleUser"
     '400':
-      description: Bad request.
+      description: Bad request. It may be caused by lack of some fields in request
     '500':
-      description: Internal server error.
+      description: Internal server error. May be because of problems with database (creating some data)
 delete:
   tags:
     - Permission
@@ -46,16 +47,7 @@ delete:
   responses:
     '200':
       description: Success
-      content:
-        application/json:
-          type: object
-          properties:
-            data:
-              properties:
-                amount:
-                  type: int
-                  description: amount of delete permissions
     '400':
-      description: Bad request.
+      description: Bad request. It may be caused by lack of some fields in request
     '500':
-      description: Internal server error.
+      description: Internal server error. May be because of problems with database (deleting some data)

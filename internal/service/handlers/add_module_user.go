@@ -25,7 +25,7 @@ func AddModuleUser(w http.ResponseWriter, r *http.Request) {
 
 	created, err := ModulesUsersQ(r).Create(newPermission)
 	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to add module")
+		Log(r).WithError(err).Error(err, "failed to add permission for user")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
