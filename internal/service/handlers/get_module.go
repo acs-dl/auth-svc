@@ -19,7 +19,7 @@ func GetModule(w http.ResponseWriter, r *http.Request) {
 	modulePermissions, err := ModulesQ(r).FilterByModule(request.ModuleName).Select()
 	if err != nil {
 		Log(r).WithError(err).Error("failed to get module")
-		ape.Render(w, problems.InternalError())
+		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 

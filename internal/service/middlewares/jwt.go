@@ -29,7 +29,7 @@ func Jwt() func(http.Handler) http.Handler {
 			bodyCopy, _ := io.ReadAll(r.Body)
 			if err := json.NewDecoder(io.NopCloser(bytes.NewBuffer(bodyCopy))).Decode(&body.Data); err != nil {
 				handlers.Log(r).WithError(err).Error(" failed to unmarshal")
-				ape.Render(w, problems.BadRequest(err))
+				ape.RenderErr(w, problems.BadRequest(err)...)
 				return
 			}
 			r.Body = io.NopCloser(bytes.NewBuffer(bodyCopy))
@@ -37,7 +37,7 @@ func Jwt() func(http.Handler) http.Handler {
 			claims, err := helpers.ParseJwtToken(body.Data.Attributes.Token, handlers.JwtParams(r).Secret)
 			if err != nil {
 				handlers.Log(r).WithError(err).Error("failed to decode jwt token")
-				ape.Render(w, problems.BadRequest(err))
+				ape.RenderErr(w, problems.BadRequest(err)...)
 				return
 			}
 
