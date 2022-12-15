@@ -1,8 +1,8 @@
 package cli
 
 import (
-	"gitlab.com/distributed_lab/Auth/internal/assets"
-	"gitlab.com/distributed_lab/Auth/internal/config"
+	"gitlab.com/distributed_lab/acs/auth/internal/assets"
+	"gitlab.com/distributed_lab/acs/auth/internal/config"
 
 	migrate "github.com/rubenv/sql-migrate"
 	"gitlab.com/distributed_lab/logan/v3/errors"

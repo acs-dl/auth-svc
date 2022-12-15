@@ -1,8 +1,8 @@
 package models
 
 import (
-	"gitlab.com/distributed_lab/Auth/internal/data"
-	"gitlab.com/distributed_lab/Auth/resources"
+	"gitlab.com/distributed_lab/acs/auth/internal/data"
+	"gitlab.com/distributed_lab/acs/auth/resources"
 )
 
 func NewModuleUserModel(moduleUser data.ModuleUser) resources.ModuleUser {

@@ -2,10 +2,11 @@ package requests
 
 import (
 	"encoding/json"
-	validation "github.com/go-ozzo/ozzo-validation"
-	"gitlab.com/distributed_lab/Auth/resources"
-	"gitlab.com/distributed_lab/logan/v3/errors"
 	"net/http"
+
+	validation "github.com/go-ozzo/ozzo-validation"
+	"gitlab.com/distributed_lab/acs/auth/resources"
+	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 
 type LoginRequest struct {

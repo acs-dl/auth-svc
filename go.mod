@@ -1,4 +1,4 @@
-module gitlab.com/distributed_lab/Auth
+module gitlab.com/distributed_lab/acs/auth
 
 go 1.19
 

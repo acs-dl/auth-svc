@@ -3,7 +3,7 @@ package postgres
 import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/fatih/structs"
-	"gitlab.com/distributed_lab/Auth/internal/data"
+	"gitlab.com/distributed_lab/acs/auth/internal/data"
 	"gitlab.com/distributed_lab/kit/pgdb"
 	"gitlab.com/distributed_lab/logan/v3/errors"
 )

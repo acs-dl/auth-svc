@@ -3,8 +3,9 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+
 	sq "github.com/Masterminds/squirrel"
-	"gitlab.com/distributed_lab/Auth/internal/data"
+	"gitlab.com/distributed_lab/acs/auth/internal/data"
 	"gitlab.com/distributed_lab/kit/pgdb"
 )
 

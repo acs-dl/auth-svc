@@ -2,7 +2,8 @@ package helpers
 
 import (
 	"fmt"
-	"gitlab.com/distributed_lab/Auth/internal/data"
+
+	"gitlab.com/distributed_lab/acs/auth/internal/data"
 )
 
 func CreatePermissionsString(permissions []data.ModuleUser, ModulesQ data.Modules) (string, error) {

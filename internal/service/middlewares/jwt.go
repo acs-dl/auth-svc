@@ -3,14 +3,14 @@ package middleware
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
-	"gitlab.com/distributed_lab/Auth/internal/service/handlers"
-	"gitlab.com/distributed_lab/Auth/internal/service/helpers"
-	"gitlab.com/distributed_lab/Auth/resources"
-	"gitlab.com/distributed_lab/ape"
-	"gitlab.com/distributed_lab/ape/problems"
 	"io"
 	"net/http"
+
+	"gitlab.com/distributed_lab/acs/auth/internal/service/handlers"
+	"gitlab.com/distributed_lab/acs/auth/internal/service/helpers"
+	"gitlab.com/distributed_lab/acs/auth/resources"
+	"gitlab.com/distributed_lab/ape"
+	"gitlab.com/distributed_lab/ape/problems"
 )
 
 type Body struct {
@@ -34,17 +34,13 @@ func Jwt() func(http.Handler) http.Handler {
 			}
 			r.Body = io.NopCloser(bytes.NewBuffer(bodyCopy))
 
-			claims, err := helpers.ParseJwtToken(body.Data.Attributes.Token, handlers.JwtParams(r).Secret)
+			_, err := helpers.ParseJwtToken(body.Data.Attributes.Token, handlers.JwtParams(r).Secret)
 			if err != nil {
 				handlers.Log(r).WithError(err).Error("failed to decode jwt token")
 				ape.RenderErr(w, problems.BadRequest(err)...)
 				return
 			}
 
-			var decodedPermissions = Permissions{
-				Data: claims["module.permission"].(string),
-			}
-			fmt.Println(decodedPermissions)
 			next.ServeHTTP(w, r)
 		})
 	}

@@ -1,13 +1,14 @@
 package handlers
 
 import (
-	"gitlab.com/distributed_lab/Auth/internal/data"
-	"gitlab.com/distributed_lab/Auth/internal/service/helpers"
-	"gitlab.com/distributed_lab/Auth/internal/service/requests"
-	"gitlab.com/distributed_lab/Auth/resources"
+	"net/http"
+
+	"gitlab.com/distributed_lab/acs/auth/internal/data"
+	"gitlab.com/distributed_lab/acs/auth/internal/service/helpers"
+	"gitlab.com/distributed_lab/acs/auth/internal/service/requests"
+	"gitlab.com/distributed_lab/acs/auth/resources"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
-	"net/http"
 )
 
 func Refresh(w http.ResponseWriter, r *http.Request) {

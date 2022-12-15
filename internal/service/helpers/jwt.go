@@ -2,8 +2,9 @@ package helpers
 
 import (
 	"errors"
+
 	"github.com/golang-jwt/jwt"
-	"gitlab.com/distributed_lab/Auth/internal/data"
+	"gitlab.com/distributed_lab/acs/auth/internal/data"
 )
 
 func GenerateAccessToken(user data.User, expires int64, secret string, permissions string) (string, error) {

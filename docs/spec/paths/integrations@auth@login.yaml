@@ -1,0 +1,31 @@
+post:
+  tags:
+    - Login
+  summary: Login user
+  operationId: login
+  description: Endpoint for signing in service. It takes ... and in case of success it returns 
+    access and refresh tokens. The same refresh token will be saved in database for processing. 
+    All tokens have its own life period, which are specified in the config file.
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - data
+          properties:
+            data:
+              $ref: "#/components/schemas/Login"
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/AuthToken"
+    '400':
+      description: Bad request. It may be caused by lack of some fields in request or wrong password
+    '500':
+      description: Internal server error. May be because of problems with database (creating, getting, updating some data)

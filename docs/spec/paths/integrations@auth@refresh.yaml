@@ -1,0 +1,30 @@
+post:
+  tags:
+    - refresh
+  summary: Refresh token
+  operationId: refresh
+  description:  Endpoint for refreshing jwt token. It takes old refresh token and in case of success creates new token
+    with the same data inside but with extended term.
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - data
+          properties:
+            data:
+              $ref: "#/components/schemas/RefreshToken"
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/RefreshToken"
+    '400':
+      description: Bad request. It may be caused by lack of some fields in request or wrong token
+    '500':
+      description: Internal server error. May be because of problems with database (creating, getting, deleting some data)

@@ -2,9 +2,10 @@ package handlers
 
 import (
 	"context"
-	"gitlab.com/distributed_lab/Auth/internal/config"
-	"gitlab.com/distributed_lab/Auth/internal/data"
 	"net/http"
+
+	"gitlab.com/distributed_lab/acs/auth/internal/config"
+	"gitlab.com/distributed_lab/acs/auth/internal/data"
 
 	"gitlab.com/distributed_lab/logan/v3"
 )
