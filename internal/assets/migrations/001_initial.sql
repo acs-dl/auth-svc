@@ -7,7 +7,7 @@ create table users (
 );
 
 INSERT INTO users (email, password)
-VALUES ('max@mail', '$2b$10$ggulBRryhFGQEbaPX76oGeZ1EgduENOtSZWSe3d693z27X33Zt4Xe');
+VALUES ('nik@gmail.com', '$2b$10$ggulBRryhFGQEbaPX76oGeZ1EgduENOtSZWSe3d693z27X33Zt4Xe');
 
 create table refresh_tokens (
     token text primary key,
