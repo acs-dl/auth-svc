@@ -21,10 +21,11 @@ post:
       description: Success
       content:
         application/json:
-          type: object
-          properties:
-            data:
-              $ref: "#/components/schemas/AuthToken"
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: "#/components/schemas/AuthToken"
     '400':
       description: Bad request. It may be caused by lack of some fields in request or wrong password
     '500':

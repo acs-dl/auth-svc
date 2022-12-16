@@ -20,10 +20,11 @@ post:
       description: Success
       content:
         application/json:
-          type: object
-          properties:
-            data:
-              $ref: "#/components/schemas/ModulePermission"
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: "#/components/schemas/ModulePermission"
     '400':
       description: Bad request. Bad request. It may be caused by lack of some fields in request
     '500':

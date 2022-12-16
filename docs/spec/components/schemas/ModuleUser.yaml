@@ -11,6 +11,8 @@ allOf:
           - module_id
         properties:
           user_id:
-            type: int64
+            type: integer
+            format: int64
           module_id:
-            type: int64
+            type: integer
+            format: int64
