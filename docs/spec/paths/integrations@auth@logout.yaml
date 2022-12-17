@@ -14,7 +14,7 @@ post:
             - data
           properties:
             data:
-              $ref: "#/components/schemas/RefreshToken"
+              $ref: "#/components/schemas/Refresh"
   responses:
     '200':
       description: Success

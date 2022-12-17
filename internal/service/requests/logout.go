@@ -16,7 +16,7 @@ type LogoutRequest struct {
 func NewLogoutRequest(r *http.Request) (LogoutRequest, error) {
 	var request LogoutRequest
 
-	if err := json.NewDecoder(r.Body).Decode(&request.Data); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return request, errors.Wrap(err, " failed to unmarshal")
 	}
 

@@ -16,7 +16,7 @@ type LoginRequest struct {
 func NewLoginRequest(r *http.Request) (LoginRequest, error) {
 	var request LoginRequest
 
-	if err := json.NewDecoder(r.Body).Decode(&request.Data); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return request, errors.Wrap(err, " failed to unmarshal")
 	}
 

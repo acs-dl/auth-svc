@@ -17,17 +17,13 @@ type Body struct {
 	Data resources.Refresh
 }
 
-type Permissions struct {
-	Data string `json:"data"`
-}
-
 func Jwt() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			var body Body
 
 			bodyCopy, _ := io.ReadAll(r.Body)
-			if err := json.NewDecoder(io.NopCloser(bytes.NewBuffer(bodyCopy))).Decode(&body.Data); err != nil {
+			if err := json.NewDecoder(io.NopCloser(bytes.NewBuffer(bodyCopy))).Decode(&body); err != nil {
 				handlers.Log(r).WithError(err).Error(" failed to unmarshal")
 				ape.RenderErr(w, problems.BadRequest(err)...)
 				return

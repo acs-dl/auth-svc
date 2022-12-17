@@ -16,7 +16,7 @@ type AddModuleRequest struct {
 func NewAddModuleRequest(r *http.Request) (AddModuleRequest, error) {
 	var request AddModuleRequest
 
-	if err := json.NewDecoder(r.Body).Decode(&request.Data); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return request, errors.Wrap(err, " failed to unmarshal")
 	}
 

@@ -16,7 +16,7 @@ type DeleteModuleUserRequest struct {
 func NewDeleteModuleUserRequest(r *http.Request) (DeleteModuleUserRequest, error) {
 	var request DeleteModuleUserRequest
 
-	if err := json.NewDecoder(r.Body).Decode(&request.Data); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return request, errors.Wrap(err, " failed to unmarshal")
 	}
 

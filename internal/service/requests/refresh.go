@@ -16,7 +16,7 @@ type RefreshRequest struct {
 func NewRefreshRequest(r *http.Request) (RefreshRequest, error) {
 	var request RefreshRequest
 
-	if err := json.NewDecoder(r.Body).Decode(&request.Data); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return request, errors.Wrap(err, " failed to unmarshal")
 	}
 
