@@ -39,6 +39,10 @@ func (s *service) router() chi.Router {
 			r.Post("/", handlers.Logout)
 		})
 
+		r.Route("/validate", func(r chi.Router) {
+			r.Post("/", handlers.Validate)
+		})
+
 		r.Route("/module", func(r chi.Router) {
 			r.Post("/", handlers.AddModule)
 			r.Route("/{name}", func(r chi.Router) {

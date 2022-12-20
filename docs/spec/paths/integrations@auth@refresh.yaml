@@ -1,6 +1,6 @@
 post:
   tags:
-    - refresh
+    - Refresh
   summary: Refresh token
   operationId: refresh
   description:  Endpoint for refreshing jwt token. It takes old refresh token and in case of success creates new token
@@ -24,7 +24,7 @@ post:
             type: object
             properties:
               data:
-                $ref: "#/components/schemas/Refresh"
+                $ref: "#/components/schemas/AuthToken"
     '400':
       description: Bad request. It may be caused by lack of some fields in request or wrong token
     '500':

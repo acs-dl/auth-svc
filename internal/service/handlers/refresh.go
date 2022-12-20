@@ -25,6 +25,11 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
+	if refreshToken == nil {
+		Log(r).Info("no token was found in db")
+		ape.RenderErr(w, problems.NotFound())
+		return
+	}
 
 	jwt := JwtParams(r)
 
@@ -52,6 +57,19 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 	permissionsString, err := helpers.CreatePermissionsString(permissions, ModulesQ(r))
 	if err != nil {
 		Log(r).WithError(err).Error(err, "failed to get create user permissions string")
+		ape.RenderErr(w, problems.InternalError())
+		return
+	}
+
+	access, err := helpers.GenerateAccessToken(*user, helpers.ParseToUnix(jwt.AccessLife), jwt.Secret, permissionsString)
+	if err != nil {
+		Log(r).WithError(err).Error(err, "failed to create access token")
+		ape.RenderErr(w, problems.InternalError())
+		return
+	}
+	err = AmountsQ(r).Add("access")
+	if err != nil {
+		Log(r).WithError(err).Error(err, "failed to add counter user")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
@@ -89,10 +107,11 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := resources.RefreshResponse{
-		Data: resources.Refresh{
-			Attributes: resources.RefreshAttributes{
-				Token: refresh,
+	result := resources.AuthTokenResponse{
+		Data: resources.AuthToken{
+			Attributes: resources.AuthTokenAttributes{
+				Access:  access,
+				Refresh: refresh,
 			},
 		},
 	}

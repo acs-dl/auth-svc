@@ -1,0 +1,14 @@
+post:
+  tags:
+    - Validate
+  summary: Validate token
+  operationId: validate
+  description: Endpoint for validating jwt token. It takes 'r *http.Request', where in header 'Authorization' must be
+    'Bearer "token"' to check token
+  responses:
+    '200':
+      description: Success
+    '400':
+      description: Bad request. It may be caused by wrong token
+    '500':
+      description: Internal server error. May be because of problems with database

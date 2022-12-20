@@ -1,10 +1,9 @@
 package helpers
 
 import (
-	"errors"
-
 	"github.com/golang-jwt/jwt"
 	"gitlab.com/distributed_lab/acs/auth/internal/data"
+	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 
 func GenerateAccessToken(user data.User, expires int64, secret string, permissions string) (string, error) {
@@ -32,13 +31,10 @@ func GenerateRefreshToken(user data.User, expires int64, secret string, permissi
 }
 
 func CheckRefreshToken(tokenStr string, ownerId int64, secret string) error {
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("unexpected signing method")
-		}
-
-		return []byte(secret), nil
-	})
+	token, err := parse(tokenStr, []byte(secret))
+	if err != nil {
+		return errors.Wrap(err, "some error while parsing jwt token")
+	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if int64(claims["owner_id"].(float64)) != ownerId {
@@ -53,14 +49,34 @@ func CheckRefreshToken(tokenStr string, ownerId int64, secret string) error {
 	return err
 }
 
-func ParseJwtToken(tokenStr string, secret string) (jwt.MapClaims, error) {
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+func parse(tokenStr string, secret []byte) (*jwt.Token, error) {
+	return jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
 
-		return []byte(secret), nil
+		return secret, nil
 	})
+}
+
+func CheckValidToken(tokenStr string, secret string) error {
+	token, err := parse(tokenStr, []byte(secret))
+	if err != nil {
+		return errors.Wrap(err, "some error while parsing jwt token")
+	}
+
+	if !token.Valid {
+		return errors.New("invalid token")
+	}
+
+	return err
+}
+
+func ParseJwtToken(tokenStr string, secret string) (jwt.MapClaims, error) {
+	token, err := parse(tokenStr, []byte(secret))
+	if err != nil {
+		return nil, errors.Wrap(err, "some error while parsing jwt token")
+	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return claims, nil
