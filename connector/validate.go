@@ -10,29 +10,23 @@ import (
 
 const validateEndpoint = "validate"
 
-func (c *Connector) Validate(req *http.Request, modulePrefix string) (err error) {
-	defer wrapErr(err)
+func (c *Connector) ValidateToken(req *http.Request) (err error) {
+	defer func(e error) {
+		err = errors.Wrap(err, "failed to send request via connector")
+	}(err)
 
-	endpoint := fmt.Sprintf("%s/%s/%s", c.baseUrl, modulePrefix, validateEndpoint)
+	endpoint := fmt.Sprintf("%s/%s", c.baseUrl, validateEndpoint)
 
-	splitedAuthHeader := strings.Split(req.Header.Get("Authorization"), " ")
-	if len(splitedAuthHeader) != 2 {
-		return
+	splitAuthHeader := strings.Split(req.Header.Get("Authorization"), " ")
+	if len(splitAuthHeader) != 2 {
+		return errors.New("No auth token provided")
 	}
 
-	token := splitedAuthHeader[1]
+	token := splitAuthHeader[1]
 	if token == "" {
-		return
+		return errors.New("No auth token provided")
 	}
 
 	err = c.post(endpoint, token, nil)
 	return
-}
-
-func wrapErr(err error) error {
-	if err != nil {
-		err = errors.Wrap(err, "failed to send message")
-	}
-
-	return err
 }
