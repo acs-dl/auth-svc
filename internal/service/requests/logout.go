@@ -24,7 +24,7 @@ func NewLogoutRequest(r *http.Request) (LogoutRequest, error) {
 }
 
 func (r *LogoutRequest) validate() error {
-	return mergeErrors(validation.Errors{
-		"attributes": validation.Validate(&r.Data.Attributes, validation.Required),
-	}).Filter()
+	return validation.Errors{
+		"token": validation.Validate(&r.Data.Attributes.Token, validation.Required),
+	}.Filter()
 }

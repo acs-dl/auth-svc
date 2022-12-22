@@ -1,0 +1,25 @@
+allOf:
+  - $ref: "#/components/schemas/ModuleKey"
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        type: object
+        required:
+          - id
+          - module_name
+        properties:
+          id:
+            type: int64
+          module_name:
+            type: string
+    relationships:
+      type: object
+      required:
+        - permissions
+      properties:
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TokenKey'

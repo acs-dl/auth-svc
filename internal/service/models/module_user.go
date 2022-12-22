@@ -5,22 +5,22 @@ import (
 	"gitlab.com/distributed_lab/acs/auth/resources"
 )
 
-func NewModuleUserModel(moduleUser data.ModuleUser) resources.ModuleUser {
-	result := resources.ModuleUser{
-		Key: resources.NewKeyInt64(-1, resources.MODULE_PERMISSION),
-		Attributes: resources.ModuleUserAttributes{
-			UserId:   moduleUser.UserId,
-			ModuleId: moduleUser.ModuleId,
+func NewPermissionUserModel(PermissionUser data.PermissionUser) resources.PermissionUser {
+	result := resources.PermissionUser{
+		Key: resources.NewKeyInt64(PermissionUser.UserId, resources.MODULE_PERMISSION),
+		Attributes: resources.PermissionUserAttributes{
+			UserId:       PermissionUser.UserId,
+			PermissionId: PermissionUser.PermissionId,
 		},
 	}
 
 	return result
 }
 
-func NewModuleUsersList(moduleUsers []data.ModuleUser) []resources.ModuleUser {
-	result := make([]resources.ModuleUser, len(moduleUsers))
-	for i, elem := range moduleUsers {
-		result[i] = NewModuleUserModel(elem)
+func NewPermissionUsersList(PermissionUsers []data.PermissionUser) []resources.PermissionUser {
+	result := make([]resources.PermissionUser, len(PermissionUsers))
+	for i, elem := range PermissionUsers {
+		result[i] = NewPermissionUserModel(elem)
 	}
 	return result
 }

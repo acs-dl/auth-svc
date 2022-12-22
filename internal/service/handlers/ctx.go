@@ -15,9 +15,9 @@ type ctxKey int
 const (
 	logCtxKey ctxKey = iota
 	usersCtxKey
-	amountsCtxKey
 	modulesCtxKey
-	modulesUsersCtxKey
+	permissionsCtxKey
+	PermissionUsersCtxKey
 	refreshTokensCtxKey
 	jwtParamsCtxKey
 )
@@ -62,23 +62,23 @@ func CtxModulesQ(entry data.Modules) func(context.Context) context.Context {
 	}
 }
 
-func ModulesUsersQ(r *http.Request) data.ModulesUsers {
-	return r.Context().Value(modulesUsersCtxKey).(data.ModulesUsers).New()
+func PermissionUsersQ(r *http.Request) data.PermissionUsers {
+	return r.Context().Value(PermissionUsersCtxKey).(data.PermissionUsers).New()
 }
 
-func CtxModulesUsersQ(entry data.ModulesUsers) func(context.Context) context.Context {
+func CtxPermissionUsersQ(entry data.PermissionUsers) func(context.Context) context.Context {
 	return func(ctx context.Context) context.Context {
-		return context.WithValue(ctx, modulesUsersCtxKey, entry)
+		return context.WithValue(ctx, PermissionUsersCtxKey, entry)
 	}
 }
 
-func AmountsQ(r *http.Request) data.Amounts {
-	return r.Context().Value(amountsCtxKey).(data.Amounts).New()
+func PermissionsQ(r *http.Request) data.Permissions {
+	return r.Context().Value(permissionsCtxKey).(data.Permissions).New()
 }
 
-func CtxAmountsQ(entry data.Amounts) func(context.Context) context.Context {
+func CtxPermissionsQ(entry data.Permissions) func(context.Context) context.Context {
 	return func(ctx context.Context) context.Context {
-		return context.WithValue(ctx, amountsCtxKey, entry)
+		return context.WithValue(ctx, permissionsCtxKey, entry)
 	}
 }
 

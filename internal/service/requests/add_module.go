@@ -24,7 +24,8 @@ func NewAddModuleRequest(r *http.Request) (AddModuleRequest, error) {
 }
 
 func (r *AddModuleRequest) validate() error {
-	return mergeErrors(validation.Errors{
-		"attributes": validation.Validate(&r.Data.Attributes, validation.Required),
-	}).Filter()
+	return validation.Errors{
+		"module":     validation.Validate(&r.Data.Attributes.Module, validation.Required),
+		"permission": validation.Validate(&r.Data.Attributes.Permission, validation.Required),
+	}.Filter()
 }

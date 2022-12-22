@@ -25,7 +25,7 @@ func NewValidateRequest(r *http.Request) (ValidateRequest, error) {
 }
 
 func (r *ValidateRequest) validate() error {
-	return mergeErrors(validation.Errors{
+	return validation.Errors{
 		"token": validation.Validate(&r.Token, validation.Required),
-	}).Filter()
+	}.Filter()
 }

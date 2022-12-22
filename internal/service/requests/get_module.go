@@ -3,6 +3,8 @@ package requests
 import (
 	"github.com/go-chi/chi"
 	"net/http"
+
+	validation "github.com/go-ozzo/ozzo-validation"
 )
 
 type GetModuleRequest struct {
@@ -15,4 +17,10 @@ func NewGetModuleRequestRequest(r *http.Request) (GetModuleRequest, error) {
 	request.ModuleName = chi.URLParam(r, "name")
 
 	return request, nil
+}
+
+func (r *GetModuleRequest) validate() error {
+	return validation.Errors{
+		"name": validation.Validate(&r.ModuleName, validation.Required),
+	}.Filter()
 }

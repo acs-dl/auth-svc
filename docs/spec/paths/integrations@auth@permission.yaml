@@ -14,7 +14,7 @@ post:
             - data
           properties:
             data:
-              $ref: "#/components/schemas/ModuleUser"
+              $ref: "#/components/schemas/PermissionUser"
   responses:
     '200':
       description: Success
@@ -24,7 +24,7 @@ post:
             type: object
             properties:
               data:
-                $ref: "#/components/schemas/ModuleUser"
+                $ref: "#/components/schemas/PermissionUser"
     '400':
       description: Bad request. It may be caused by lack of some fields in request
     '500':
@@ -44,7 +44,7 @@ delete:
             - data
           properties:
             data:
-              $ref: "#/components/schemas/ModuleUser"
+              $ref: "#/components/schemas/PermissionUser"
   responses:
     '200':
       description: Success

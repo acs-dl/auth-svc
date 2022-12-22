@@ -18,9 +18,9 @@ func (s *service) router() chi.Router {
 			handlers.CtxLog(s.log),
 			handlers.CtxJwtParams(*s.cfg.JwtParams()),
 			handlers.CtxUsersQ(postgres.NewUsersQ(s.cfg.DB())),
-			handlers.CtxAmountsQ(postgres.NewAmountsQ(s.cfg.DB())),
 			handlers.CtxModulesQ(postgres.NewModulesQ(s.cfg.DB())),
-			handlers.CtxModulesUsersQ(postgres.NewModulesUsersQ(s.cfg.DB())),
+			handlers.CtxPermissionsQ(postgres.NewPermissionsQ(s.cfg.DB())),
+			handlers.CtxPermissionUsersQ(postgres.NewPermissionUsersQ(s.cfg.DB())),
 			handlers.CtxRefreshTokensQ(postgres.NewRefreshTokensQ(s.cfg.DB())),
 		),
 	)
@@ -52,8 +52,8 @@ func (s *service) router() chi.Router {
 		})
 
 		r.Route("/permission", func(r chi.Router) {
-			r.Post("/", handlers.AddModuleUser)
-			r.Delete("/", handlers.DeleteModuleUser)
+			r.Post("/", handlers.AddPermissionUser)
+			r.Delete("/", handlers.DeletePermissionUser)
 		})
 	})
 

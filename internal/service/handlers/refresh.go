@@ -47,14 +47,14 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	permissions, err := ModulesUsersQ(r).FilterByUserId(user.Id).Select()
+	permissions, err := PermissionUsersQ(r).FilterByUserId(user.Id).Select()
 	if err != nil {
 		Log(r).WithError(err).Error(err, "failed to get user permissions")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
-	permissionsString, err := helpers.CreatePermissionsString(permissions, ModulesQ(r))
+	permissionsString, err := helpers.CreatePermissionsString(permissions, PermissionsQ(r))
 	if err != nil {
 		Log(r).WithError(err).Error(err, "failed to get create user permissions string")
 		ape.RenderErr(w, problems.InternalError())
@@ -67,22 +67,10 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
-	err = AmountsQ(r).Add("access")
-	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to add counter user")
-		ape.RenderErr(w, problems.InternalError())
-		return
-	}
 
 	refresh, err, claims := helpers.GenerateRefreshToken(*user, helpers.ParseToUnix(jwt.RefreshLife), jwt.Secret, permissionsString)
 	if err != nil {
 		Log(r).WithError(err).Error(err, "failed to create refresh token")
-		ape.RenderErr(w, problems.InternalError())
-		return
-	}
-	err = AmountsQ(r).Add("refresh")
-	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to add counter")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}

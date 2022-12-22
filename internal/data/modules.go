@@ -3,19 +3,20 @@ package data
 type Modules interface {
 	New() Modules
 
-	Create(module ModulePermission) (ModulePermission, error)
-	Select() ([]ModulePermission, error)
-	Get() (*ModulePermission, error)
+	Create(module Module) (*Module, error)
+	Select() ([]Module, error)
+	Get() (*Module, error)
 	Delete(moduleName string) error
+}
 
-	FilterByModule(moduleName string) Modules
-	FilterById(id int64) Modules
-
-	ResetFilters() Modules
+type Module struct {
+	Id   int64  `db:"id" structs:"-"`
+	Name string `db:"name" structs:"name"`
 }
 
 type ModulePermission struct {
-	Id         int64  `db:"id" structs:"-"`
-	ModuleName string `db:"module_name" structs:"module_name"`
-	Permission string `db:"permission" structs:"permission"`
+	Id             int64  `db:"id" structs:"-"`
+	ModuleId       int64  `db:"module_id" structs:"module_id"`
+	ModuleName     string `db:"module_name" structs:"name"`
+	PermissionName string `db:"permission_name" structs:"name"`
 }

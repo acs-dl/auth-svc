@@ -1,5 +1,5 @@
 allOf:
-  - $ref: "#/components/schemas/ModuleUserKey"
+  - $ref: "#/components/schemas/PermissionUserKey"
   - type: object
     required:
       - attributes
@@ -8,11 +8,11 @@ allOf:
         type: object
         required:
           - user_id
-          - module_id
+          - permission_id
         properties:
           user_id:
             type: integer
             format: int64
-          module_id:
+          permission_id:
             type: integer
             format: int64

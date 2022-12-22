@@ -9,20 +9,20 @@ import (
 	"gitlab.com/distributed_lab/ape/problems"
 )
 
-func DeleteModuleUser(w http.ResponseWriter, r *http.Request) {
-	request, err := requests.NewDeleteModuleUserRequest(r)
+func DeletePermissionUser(w http.ResponseWriter, r *http.Request) {
+	request, err := requests.NewDeletePermissionUserRequest(r)
 	if err != nil {
 		Log(r).WithError(err).Info("wrong request")
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
 
-	moduleUser := data.ModuleUser{
-		UserId:   request.Data.Attributes.UserId,
-		ModuleId: request.Data.Attributes.ModuleId,
+	PermissionUser := data.PermissionUser{
+		UserId:       request.Data.Attributes.UserId,
+		PermissionId: request.Data.Attributes.PermissionId,
 	}
 
-	err = ModulesUsersQ(r).Delete(moduleUser)
+	err = PermissionUsersQ(r).Delete(PermissionUser)
 	if err != nil {
 		Log(r).WithError(err).Error(err, "failed to remove permission for user")
 		ape.RenderErr(w, problems.InternalError())

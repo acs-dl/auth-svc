@@ -24,17 +24,7 @@ func NewLoginRequest(r *http.Request) (LoginRequest, error) {
 }
 
 func (r *LoginRequest) validate() error {
-	return mergeErrors(validation.Errors{
+	return validation.Errors{
 		"attributes": validation.Validate(&r.Data.Attributes, validation.Required),
-	}).Filter()
-}
-
-func mergeErrors(validationErrors ...validation.Errors) validation.Errors {
-	result := make(validation.Errors)
-	for _, errs := range validationErrors {
-		for key, err := range errs {
-			result[key] = err
-		}
-	}
-	return result
+	}.Filter()
 }

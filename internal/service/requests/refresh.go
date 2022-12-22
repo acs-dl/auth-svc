@@ -24,7 +24,7 @@ func NewRefreshRequest(r *http.Request) (RefreshRequest, error) {
 }
 
 func (r *RefreshRequest) validate() error {
-	return mergeErrors(validation.Errors{
-		"attributes": validation.Validate(&r.Data.Attributes, validation.Required),
-	}).Filter()
+	return validation.Errors{
+		"token": validation.Validate(&r.Data.Attributes.Token, validation.Required),
+	}.Filter()
 }

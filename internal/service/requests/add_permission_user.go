@@ -9,12 +9,12 @@ import (
 	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 
-type DeletePermissionUserRequest struct {
+type AddPermissionUserRequest struct {
 	Data resources.PermissionUser
 }
 
-func NewDeletePermissionUserRequest(r *http.Request) (DeletePermissionUserRequest, error) {
-	var request DeletePermissionUserRequest
+func NewAddPermissionUserRequest(r *http.Request) (AddPermissionUserRequest, error) {
+	var request AddPermissionUserRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return request, errors.Wrap(err, " failed to unmarshal")
@@ -23,7 +23,7 @@ func NewDeletePermissionUserRequest(r *http.Request) (DeletePermissionUserReques
 	return request, request.validate()
 }
 
-func (r *DeletePermissionUserRequest) validate() error {
+func (r *AddPermissionUserRequest) validate() error {
 	return validation.Errors{
 		"permission_id": validation.Validate(&r.Data.Attributes.PermissionId, validation.Required),
 		"user_id":       validation.Validate(&r.Data.Attributes.UserId, validation.Required),

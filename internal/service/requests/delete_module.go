@@ -2,6 +2,7 @@ package requests
 
 import (
 	"github.com/go-chi/chi"
+	validation "github.com/go-ozzo/ozzo-validation"
 	"net/http"
 )
 
@@ -14,5 +15,11 @@ func NewDeleteModuleRequest(r *http.Request) (DeleteModuleRequest, error) {
 
 	request.ModuleName = chi.URLParam(r, "name")
 
-	return request, nil
+	return request, request.validate()
+}
+
+func (r *DeleteModuleRequest) validate() error {
+	return validation.Errors{
+		"name": validation.Validate(&r.ModuleName, validation.Required),
+	}.Filter()
 }
