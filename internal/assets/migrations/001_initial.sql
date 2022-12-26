@@ -1,18 +1,18 @@
 -- +migrate Up
 
 CREATE TABLE IF NOT EXISTS users (
-    id bigserial primary key,
-    email text not null,
-    password text not null
+    id bigserial PRIMARY KEY,
+    email text NOT NULL,
+    password text NOT NULL
 );
 
 INSERT INTO users (email, password)
 VALUES ('nik@gmail.com', '$2b$10$ggulBRryhFGQEbaPX76oGeZ1EgduENOtSZWSe3d693z27X33Zt4Xe');
 
 CREATE TABLE IF NOT EXISTS refresh_tokens (
-    token text primary key,
-    owner_id int not null references users (id) on delete cascade,
-    valid_date int not null
+    token text PRIMARY KEY,
+    owner_id INT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    valid_date INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS modules (
@@ -25,20 +25,23 @@ CREATE INDEX IF NOT EXISTS module_namex ON modules(name);
 CREATE TABLE IF NOT EXISTS permissions (
     id bigserial PRIMARY KEY,
     module_id bigint NOT NULL,
-    name text UNIQUE NOT NULL,
+    name text NOT NULL,
 
-    foreign key(module_id) references modules(id) on delete cascade
+    UNIQUE(module_id, name),
+    FOREIGN KEY(module_id) REFERENCES modules(id) ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS permissions_moduleid_name_idx ON permissions(module_id, name);
 
 CREATE TABLE IF NOT EXISTS permissions_users (
-    permission_id bigint not null,
-    user_id bigint not null,
+    permission_id bigint NOT NULL,
+    user_id bigint NOT NULL,
 
-    foreign key(permission_id) references permissions(id) on delete cascade,
-    foreign key(user_id) references users(id) on delete cascade
+    FOREIGN KEY(permission_id) REFERENCES permissions(id) ON DELETE CASCADE,
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE INDEX IF NOT EXISTS user_idx on permissions_users(user_id);
+CREATE INDEX IF NOT EXISTS user_idx ON permissions_users(user_id);
 
 -- +migrate Down
 

@@ -5,7 +5,7 @@ type Modules interface {
 
 	Create(module Module) (*Module, error)
 	Select() ([]Module, error)
-	Get() (*Module, error)
+	GetByName(name string) (*Module, error)
 	Delete(moduleName string) error
 }
 

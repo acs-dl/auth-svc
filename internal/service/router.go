@@ -48,6 +48,8 @@ func (s *service) router() chi.Router {
 			r.Route("/{name}", func(r chi.Router) {
 				r.Get("/", handlers.GetModule)
 				r.Delete("/", handlers.DeleteModule)
+
+				r.Delete("/{permission_name}", handlers.DeletePermission)
 			})
 		})
 

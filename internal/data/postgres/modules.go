@@ -34,7 +34,7 @@ func (q *ModulesQ) New() data.Modules {
 func (q *ModulesQ) Create(module data.Module) (*data.Module, error) {
 	clauses := structs.Map(module)
 
-	query := sq.Insert(modulesTableName).SetMap(clauses).Suffix("ON CONFLICT DO NOTHING")
+	query := sq.Insert(modulesTableName).SetMap(clauses).Suffix("ON CONFLICT (name) DO NOTHING")
 
 	err := q.db.Exec(query)
 	if err != nil {
@@ -55,10 +55,10 @@ func (q *ModulesQ) Select() ([]data.Module, error) {
 	return result, err
 }
 
-func (q *ModulesQ) Get() (*data.Module, error) {
+func (q *ModulesQ) GetByName(name string) (*data.Module, error) {
 	var result data.Module
 
-	err := q.db.Get(&result, q.sql)
+	err := q.db.Get(&result, q.sql.Where(sq.Eq{"name": name}))
 
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -68,7 +68,7 @@ func (q *ModulesQ) Get() (*data.Module, error) {
 }
 
 func (q *ModulesQ) Delete(moduleName string) error {
-	query := sq.Delete(modulesTableName).Where(sq.Eq{"module_name": moduleName})
+	query := sq.Delete(modulesTableName).Where(sq.Eq{"name": moduleName})
 
 	result, err := q.db.ExecWithResult(query)
 	if err != nil {

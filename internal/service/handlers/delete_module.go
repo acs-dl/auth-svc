@@ -23,5 +23,5 @@ func DeleteModule(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ape.Render(w, http.StatusOK)
+	ape.Render(w, http.StatusAccepted)
 }

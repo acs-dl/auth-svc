@@ -36,7 +36,7 @@ func (q *PermissionsQ) New() data.Permissions {
 func (q *PermissionsQ) Create(permission data.Permission) (*data.Permission, error) {
 	clauses := structs.Map(permission)
 
-	query := sq.Insert(permissionsTableName).SetMap(clauses).Suffix("ON CONFLICT DO NOTHING")
+	query := sq.Insert(permissionsTableName).SetMap(clauses).Suffix("ON CONFLICT (module_id, name) DO NOTHING")
 
 	err := q.db.Exec(query)
 	if err != nil {

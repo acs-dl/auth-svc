@@ -2,12 +2,11 @@ package handlers
 
 import (
 	"gitlab.com/distributed_lab/acs/auth/internal/service/models"
-	"gitlab.com/distributed_lab/acs/auth/resources"
-	"net/http"
-
 	"gitlab.com/distributed_lab/acs/auth/internal/service/requests"
+	"gitlab.com/distributed_lab/acs/auth/resources"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
+	"net/http"
 )
 
 func GetModule(w http.ResponseWriter, r *http.Request) {
@@ -24,7 +23,7 @@ func GetModule(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
-	
+
 	response := resources.ModulePermissionListResponse{
 		Data: models.NewModulePermissionsList(result),
 	}
