@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 INSERT INTO users (email, password)
-VALUES ('nik@gmail.com', '$2b$10$ggulBRryhFGQEbaPX76oGeZ1EgduENOtSZWSe3d693z27X33Zt4Xe');
+VALUES ('serhii.pomohaiev@distributedlab.com', '$2b$10$ggulBRryhFGQEbaPX76oGeZ1EgduENOtSZWSe3d693z27X33Zt4Xe');
 
 CREATE TABLE IF NOT EXISTS refresh_tokens (
     token text PRIMARY KEY,
