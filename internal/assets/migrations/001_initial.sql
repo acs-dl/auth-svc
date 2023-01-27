@@ -1,13 +1,13 @@
 -- +migrate Up
 
 CREATE TABLE IF NOT EXISTS users (
-    id bigserial PRIMARY KEY,
+    id bigint PRIMARY KEY,
     email text NOT NULL,
     password text NOT NULL
 );
 
-INSERT INTO users (email, password)
-VALUES ('serhii.pomohaiev@distributedlab.com', '$2b$10$ggulBRryhFGQEbaPX76oGeZ1EgduENOtSZWSe3d693z27X33Zt4Xe');
+INSERT INTO users (id, email, password)
+VALUES (1, 'serhii.pomohaiev@distributedlab.com', '$2b$10$ggulBRryhFGQEbaPX76oGeZ1EgduENOtSZWSe3d693z27X33Zt4Xe');
 
 CREATE TABLE IF NOT EXISTS refresh_tokens (
     token text PRIMARY KEY,
