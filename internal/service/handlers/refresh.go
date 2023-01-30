@@ -84,7 +84,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 
 	newRefreshToken := data.RefreshToken{
 		Token:     refresh,
-		OwnerId:   claims["user_id"].(int64),
+		OwnerId:   claims["owner_id"].(int64),
 		ValidDate: claims["exp"].(int64),
 	}
 
