@@ -10,7 +10,7 @@ func GenerateAccessToken(user data.User, expires int64, secret string, permissio
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["exp"] = expires
-	claims["user_id"] = user.Id
+	claims["owner_id"] = user.Id
 	claims["email"] = user.Email
 	claims["module.permission"] = permissions
 
@@ -21,7 +21,7 @@ func GenerateRefreshToken(user data.User, expires int64, secret string, permissi
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["exp"] = expires
-	claims["user_id"] = user.Id
+	claims["owner_id"] = user.Id
 	claims["email"] = user.Email
 	claims["module.permission"] = permissions
 

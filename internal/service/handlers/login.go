@@ -27,8 +27,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if user == nil {
-		Log(r).WithError(err).Error(err, "no user with such email")
-		ape.RenderErr(w, problems.NotFound())
+		Log(r).Errorf("no user with such email `%s`", request.Data.Attributes.Email)
+		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
