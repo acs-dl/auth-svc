@@ -26,6 +26,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
+	if user == nil {
+		Log(r).WithError(err).Error(err, "no user with such email")
+		ape.RenderErr(w, problems.NotFound())
+		return
+	}
 
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Data.Attributes.Password)) != nil {
 		Log(r).WithError(err).Info("wrong request")
