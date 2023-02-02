@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS permissions_users (
 );
 INSERT INTO permissions_users VALUES (5, 1);
 INSERT INTO permissions_users VALUES (7, 1);
+INSERT INTO permissions_users VALUES (9, 1);
 
 CREATE INDEX IF NOT EXISTS user_idx ON permissions_users(user_id);
 
