@@ -10,12 +10,12 @@ import (
 	"gitlab.com/distributed_lab/ape/problems"
 )
 
-func Jwt(module string, permissions ...string) func(http.Handler) http.Handler {
+func Jwt(secret, module string, permissions ...string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" {
-				//handlers.Log(r).Errorf("empty authorization header")
+				handlers.Log(r).Errorf("empty authorization header")
 				ape.RenderErr(w, problems.Unauthorized())
 				return
 			}
@@ -26,7 +26,7 @@ func Jwt(module string, permissions ...string) func(http.Handler) http.Handler {
 				ape.RenderErr(w, problems.Unauthorized())
 				return
 			}
-			claims, err := helpers.ParseJwtToken(splitAuthHeader[1], handlers.JwtParams(r).Secret)
+			claims, err := helpers.ParseJwtToken(splitAuthHeader[1], secret)
 			if err != nil {
 				//handlers.Log(r).WithError(err).Error("failed to decode jwt token")
 				ape.RenderErr(w, problems.BadRequest(err)...)
