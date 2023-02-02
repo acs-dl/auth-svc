@@ -15,20 +15,20 @@ func Jwt(module string, permissions ...string) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" {
-				handlers.Log(r).Errorf("empty authorization header")
+				//handlers.Log(r).Errorf("empty authorization header")
 				ape.RenderErr(w, problems.Unauthorized())
 				return
 			}
 
 			splitAuthHeader := strings.Split(authHeader, " ")
 			if len(splitAuthHeader) < 2 {
-				handlers.Log(r).Errorf("bad header structure")
+				//handlers.Log(r).Errorf("bad header structure")
 				ape.RenderErr(w, problems.Unauthorized())
 				return
 			}
 			claims, err := helpers.ParseJwtToken(splitAuthHeader[1], handlers.JwtParams(r).Secret)
 			if err != nil {
-				handlers.Log(r).WithError(err).Error("failed to decode jwt token")
+				//handlers.Log(r).WithError(err).Error("failed to decode jwt token")
 				ape.RenderErr(w, problems.BadRequest(err)...)
 				return
 			}
@@ -52,7 +52,7 @@ func Jwt(module string, permissions ...string) func(http.Handler) http.Handler {
 				}
 			}
 
-			handlers.Log(r).Errorf("allowed permission is higher than user's one")
+			//handlers.Log(r).Errorf("allowed permission is higher than user's one")
 			ape.RenderErr(w, problems.Forbidden())
 		})
 	}
