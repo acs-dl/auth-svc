@@ -4,7 +4,6 @@ import (
 	"github.com/go-chi/chi"
 	"gitlab.com/distributed_lab/acs/auth/internal/data/postgres"
 	"gitlab.com/distributed_lab/acs/auth/internal/service/handlers"
-	middleware "gitlab.com/distributed_lab/acs/auth/internal/service/middlewares"
 	"gitlab.com/distributed_lab/ape"
 )
 
@@ -31,7 +30,6 @@ func (s *service) router() chi.Router {
 		})
 
 		r.Route("/refresh", func(r chi.Router) {
-			r.Use(middleware.Jwt())
 			r.Post("/", handlers.Refresh)
 		})
 
