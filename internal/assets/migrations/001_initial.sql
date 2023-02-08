@@ -47,6 +47,13 @@ INSERT INTO permissions VALUES (7, 2, 'write');
 INSERT INTO permissions VALUES (8, 3, 'read');
 INSERT INTO permissions VALUES (9, 3, 'write');
 
+INSERT INTO permissions VALUES (10, 4, 'Read');
+INSERT INTO permissions VALUES (11, 4, 'Triage');
+INSERT INTO permissions VALUES (12, 4, 'Write');
+INSERT INTO permissions VALUES (13, 4, 'Maintain');
+INSERT INTO permissions VALUES (14, 4, 'Admin');
+INSERT INTO permissions VALUES (15, 4, 'Member');
+
 CREATE INDEX IF NOT EXISTS permissions_moduleid_name_idx ON permissions(module_id, name);
 
 CREATE TABLE IF NOT EXISTS permissions_users (
@@ -59,6 +66,7 @@ CREATE TABLE IF NOT EXISTS permissions_users (
 INSERT INTO permissions_users VALUES (5, 1);
 INSERT INTO permissions_users VALUES (7, 1);
 INSERT INTO permissions_users VALUES (9, 1);
+INSERT INTO permissions_users VALUES (14, 1);
 
 CREATE INDEX IF NOT EXISTS user_idx ON permissions_users(user_id);
 
