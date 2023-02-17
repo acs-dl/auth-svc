@@ -4,6 +4,7 @@ import (
 	"github.com/go-chi/chi"
 	"gitlab.com/distributed_lab/acs/auth/internal/data/postgres"
 	"gitlab.com/distributed_lab/acs/auth/internal/service/handlers"
+	middleware "gitlab.com/distributed_lab/acs/auth/middlewares"
 	"gitlab.com/distributed_lab/ape"
 )
 
@@ -52,6 +53,7 @@ func (s *service) router() chi.Router {
 		})
 
 		r.Route("/permission", func(r chi.Router) {
+			r.Use(middleware.CheckHost("localhost:7000"))
 			r.Post("/", handlers.AddPermissionUser)
 			r.Delete("/", handlers.DeletePermissionUser)
 		})

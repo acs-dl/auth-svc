@@ -29,7 +29,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = helpers.CheckRefreshToken(refreshToken.Token, refreshToken.OwnerId, JwtParams(r).Secret)
+	err = helpers.CheckValidityAndOwnerForRefreshToken(refreshToken.Token, refreshToken.OwnerId, JwtParams(r).Secret)
 	if err != nil {
 		Log(r).WithError(err).Info("something wrong with refresh token")
 		ape.RenderErr(w, problems.BadRequest(err)...)

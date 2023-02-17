@@ -19,8 +19,8 @@ func NewPermissionUserModel(PermissionUser data.PermissionUser) resources.Permis
 
 func NewPermissionUsersList(PermissionUsers []data.PermissionUser) []resources.PermissionUser {
 	result := make([]resources.PermissionUser, len(PermissionUsers))
-	for i, elem := range PermissionUsers {
-		result[i] = NewPermissionUserModel(elem)
+	for i, item := range PermissionUsers {
+		result[i] = NewPermissionUserModel(item)
 	}
 	return result
 }
