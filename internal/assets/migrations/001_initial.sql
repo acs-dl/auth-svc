@@ -25,6 +25,7 @@ INSERT INTO modules VALUES (3, 'orchestrator');
 INSERT INTO modules VALUES (4, 'github');
 INSERT INTO modules VALUES (5, 'telegram');
 INSERT INTO modules VALUES (6, 'unverified');
+INSERT INTO modules VALUES (7, 'mail');
 
 CREATE INDEX IF NOT EXISTS module_namex ON modules(name);
 
@@ -61,6 +62,9 @@ INSERT INTO permissions VALUES (17, 5, 'Member');
 INSERT INTO permissions VALUES (18, 6, 'read');
 INSERT INTO permissions VALUES (19, 6, 'write');
 
+INSERT INTO permissions VALUES (20, 7, 'read');
+INSERT INTO permissions VALUES (21, 7, 'write');
+
 CREATE INDEX IF NOT EXISTS permissions_moduleid_name_idx ON permissions(module_id, name);
 
 CREATE TABLE IF NOT EXISTS permissions_users (
@@ -76,6 +80,7 @@ INSERT INTO permissions_users VALUES (9, 1);
 INSERT INTO permissions_users VALUES (14, 1);
 INSERT INTO permissions_users VALUES (16, 1);
 INSERT INTO permissions_users VALUES (19, 1);
+INSERT INTO permissions_users VALUES (20, 1);
 
 CREATE INDEX IF NOT EXISTS user_idx ON permissions_users(user_id);
 
