@@ -80,7 +80,7 @@ INSERT INTO permissions_users VALUES (9, 1);
 INSERT INTO permissions_users VALUES (14, 1);
 INSERT INTO permissions_users VALUES (16, 1);
 INSERT INTO permissions_users VALUES (19, 1);
-INSERT INTO permissions_users VALUES (20, 1);
+INSERT INTO permissions_users VALUES (21, 1);
 
 CREATE INDEX IF NOT EXISTS user_idx ON permissions_users(user_id);
 
