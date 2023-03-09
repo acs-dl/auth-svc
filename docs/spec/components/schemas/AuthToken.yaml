@@ -1,0 +1,16 @@
+allOf:
+  - $ref: "#/components/schemas/AuthTokenKey"
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        type: object
+        required:
+          - access
+          - refresh
+        properties:
+          access:
+            type: string
+          refresh:
+            type: string

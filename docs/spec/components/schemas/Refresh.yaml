@@ -1,0 +1,13 @@
+allOf:
+  - $ref: "#/components/schemas/RefreshKey"
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        type: object
+        required:
+          - token
+        properties:
+          token:
+            type: string

@@ -1,0 +1,16 @@
+allOf:
+  - $ref: "#/components/schemas/ModulePermissionKey"
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        type: object
+        required:
+          - module
+          - permission
+        properties:
+          module:
+            type: string
+          permission:
+            type: string

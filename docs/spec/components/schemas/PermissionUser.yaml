@@ -1,0 +1,18 @@
+allOf:
+  - $ref: "#/components/schemas/PermissionUserKey"
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        type: object
+        required:
+          - user_id
+          - permission_id
+        properties:
+          user_id:
+            type: integer
+            format: int64
+          permission_id:
+            type: integer
+            format: int64

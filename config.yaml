@@ -1,0 +1,21 @@
+log:
+  level: debug
+  disable_sentry: true
+
+db:
+  url: postgres://max:pass@localhost:5435/jwt_server?sslmode=disable
+
+listener:
+  addr: :7000
+
+jwt:
+  secret: SuPeR SeCrEt PhRaSe
+  refresh_life: 6h
+  access_life: 10m5s 
+
+cop:
+  disabled: true
+  endpoint: "http://..."
+  upstream: "http://..."
+  service_name: Auth
+  service_port: 80
