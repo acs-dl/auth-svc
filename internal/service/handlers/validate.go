@@ -28,7 +28,7 @@ func Validate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = helpers.CheckValidToken(refreshToken.Token, JwtParams(r).Secret)
+	_, err = helpers.CheckTokenValidity(refreshToken.Token, JwtParams(r).Secret)
 	if err != nil {
 		Log(r).WithError(err).Info("something wrong with refresh token")
 		ape.RenderErr(w, problems.BadRequest(err)...)

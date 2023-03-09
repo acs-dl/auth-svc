@@ -12,7 +12,7 @@ VALUES (1, 'serhii.pomohaiev@distributedlab.com', '$2b$10$ggulBRryhFGQEbaPX76oGe
 CREATE TABLE IF NOT EXISTS refresh_tokens (
     token text PRIMARY KEY,
     owner_id INT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    valid_date INT NOT NULL
+    valid_till INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS modules (
@@ -96,3 +96,7 @@ DROP TABLE IF EXISTS permissions_users;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS permissions;
 DROP TABLE IF EXISTS modules;
+
+DROP INDEX IF EXISTS module_namex;
+DROP INDEX IF EXISTS permissions_moduleid_name_idx;
+DROP INDEX IF EXISTS user_idx;

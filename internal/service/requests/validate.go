@@ -3,7 +3,9 @@ package requests
 import (
 	"errors"
 	validation "github.com/go-ozzo/ozzo-validation"
+	"gitlab.com/distributed_lab/acs/auth/internal/data"
 	"net/http"
+	"regexp"
 	"strings"
 )
 
@@ -26,6 +28,6 @@ func NewValidateRequest(r *http.Request) (ValidateRequest, error) {
 
 func (r *ValidateRequest) validate() error {
 	return validation.Errors{
-		"token": validation.Validate(&r.Token, validation.Required),
+		"token": validation.Validate(&r.Token, validation.Required, validation.Match(regexp.MustCompile(data.TokenRegExpStr))),
 	}.Filter()
 }

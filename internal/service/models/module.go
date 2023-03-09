@@ -19,14 +19,14 @@ func NewModulePermissionModel(module data.Module, permission data.Permission) re
 
 func NewModulePermissionsList(modulePermissions []data.ModulePermission) []resources.ModulePermission {
 	result := make([]resources.ModulePermission, len(modulePermissions))
-	for i, elem := range modulePermissions {
+	for i, item := range modulePermissions {
 		module := data.Module{
-			Name: elem.ModuleName,
-			Id:   elem.Id,
+			Name: item.ModuleName,
+			Id:   item.Id,
 		}
 		permission := data.Permission{
-			Name:     elem.PermissionName,
-			ModuleId: elem.ModuleId,
+			Name:     item.PermissionName,
+			ModuleId: item.ModuleId,
 		}
 		result[i] = NewModulePermissionModel(module, permission)
 	}

@@ -1,12 +1,13 @@
 package handlers
 
 import (
+	"gitlab.com/distributed_lab/acs/auth/internal/service/models"
+	"gitlab.com/distributed_lab/logan/v3/errors"
 	"net/http"
 
 	"gitlab.com/distributed_lab/acs/auth/internal/data"
 	"gitlab.com/distributed_lab/acs/auth/internal/service/helpers"
 	"gitlab.com/distributed_lab/acs/auth/internal/service/requests"
-	"gitlab.com/distributed_lab/acs/auth/resources"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
 )
@@ -19,24 +20,17 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	refreshToken, err := RefreshTokensQ(r).FilterByToken(request.Data.Attributes.Token).Get()
+	refreshToken, err := checkRefreshToken(RefreshTokensQ(r), request.Data.Attributes.Token, JwtParams(r).Secret)
 	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to get refresh token")
+		Log(r).WithError(err).Error(err, "failed to check refresh token")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
-	if refreshToken == nil {
-		Log(r).Info("no token was found in db")
-		ape.RenderErr(w, problems.NotFound())
-		return
-	}
 
-	jwt := JwtParams(r)
-
-	err = helpers.CheckRefreshToken(refreshToken.Token, refreshToken.OwnerId, jwt.Secret)
+	permissionsString, err := getPermissionsString(PermissionUsersQ(r), PermissionsQ(r), refreshToken.OwnerId)
 	if err != nil {
-		Log(r).WithError(err).Info("something wrong with refresh token")
-		ape.RenderErr(w, problems.BadRequest(err)...)
+		Log(r).WithError(err).Error(err, "failed to get permissions string")
+		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
@@ -47,30 +41,14 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	permissions, err := PermissionUsersQ(r).FilterByUserId(user.Id).Select()
+	access, refresh, claims, err := generateTokens(data.GenerateTokens{
+		User:              *user,
+		AccessLife:        helpers.ParseDurationStringToUnix(JwtParams(r).AccessLife),
+		Secret:            JwtParams(r).Secret,
+		PermissionsString: permissionsString,
+	})
 	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to get user permissions")
-		ape.RenderErr(w, problems.InternalError())
-		return
-	}
-
-	permissionsString, err := helpers.CreatePermissionsString(permissions, PermissionsQ(r))
-	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to get create user permissions string")
-		ape.RenderErr(w, problems.InternalError())
-		return
-	}
-
-	access, err := helpers.GenerateAccessToken(*user, helpers.ParseToUnix(jwt.AccessLife), jwt.Secret, permissionsString)
-	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to create access token")
-		ape.RenderErr(w, problems.InternalError())
-		return
-	}
-
-	refresh, err, claims := helpers.GenerateRefreshToken(*user, helpers.ParseToUnix(jwt.RefreshLife), jwt.Secret, permissionsString)
-	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to create refresh token")
+		Log(r).WithError(err).Info("failed to generate access and refresh tokens")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
@@ -84,8 +62,8 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 
 	newRefreshToken := data.RefreshToken{
 		Token:     refresh,
-		OwnerId:   claims["owner_id"].(int64),
-		ValidDate: claims["exp"].(int64),
+		OwnerId:   claims.OwnerId,
+		ValidTill: claims.ExpiresAt,
 	}
 
 	err = RefreshTokensQ(r).Create(newRefreshToken)
@@ -95,14 +73,23 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := resources.AuthTokenResponse{
-		Data: resources.AuthToken{
-			Attributes: resources.AuthTokenAttributes{
-				Access:  access,
-				Refresh: refresh,
-			},
-		},
+	ape.Render(w, models.NewAuthTokenResponse(access, refresh))
+}
+
+func checkRefreshToken(refreshTokensQ data.RefreshTokens, token, secret string) (*data.RefreshToken, error) {
+	refreshToken, err := refreshTokensQ.FilterByToken(token).Get()
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get refresh token")
 	}
 
-	ape.Render(w, result)
+	if refreshToken == nil {
+		return nil, errors.Errorf("no token was found in db")
+	}
+
+	err = helpers.CheckValidityAndOwnerForRefreshToken(refreshToken.Token, refreshToken.OwnerId, secret)
+	if err != nil {
+		return nil, errors.Wrap(err, "something wrong with refresh token")
+	}
+
+	return refreshToken, nil
 }
