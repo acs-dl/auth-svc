@@ -1,0 +1,25 @@
+parameters:
+  - name: name
+    in: path
+    required: true
+    schema:
+      type: string
+  - permission_name: name
+    in: path
+    required: true
+    schema:
+      type: string
+
+delete:
+  tags:
+    - Permission
+  summary: Delete permission
+  operationId: deleteModulePermission
+  description: Endpoint for deleting permission by its name and module name.
+  responses:
+    '200':
+      description: Success
+    '400':
+      description: Bad request
+    '500':
+      description: Internal server error

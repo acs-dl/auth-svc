@@ -1,4 +1,4 @@
-# github.com/mhrynenko/jwt-service
+# gitlab.com/distributed_lab/Auth
 
 ## Description
 
@@ -7,8 +7,8 @@ process with jwt tokens
 ## Install
 
   ```
-  git clone github.com/mhrynenko/jwt-service
-  cd jwt-service
+  git clone gitlab.com/distributed_lab/Auth
+  cd Auth
   go build main.go
   export KV_VIPER_FILE=./config.yaml
   ./main migrate up
@@ -39,8 +39,8 @@ Make sure that docker installed.
 use `docker run ` with `-p 8080:80` to expose port 80 to 8080
 
   ```
-  docker build -t jwt-service .
-  docker run -e KV_VIPER_FILE=/config.yaml jwt-service
+  docker build -t Auth .
+  docker run -e KV_VIPER_FILE=/config.yaml Auth
   ```
 
 ## Running from Source

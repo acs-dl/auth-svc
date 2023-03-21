@@ -1,11 +1,12 @@
 package handlers
 
 import (
-	"github.com/mhrynenko/jwt_service/internal/service/helpers"
-	"github.com/mhrynenko/jwt_service/internal/service/requests"
+	"net/http"
+
+	"gitlab.com/distributed_lab/acs/auth/internal/service/helpers"
+	"gitlab.com/distributed_lab/acs/auth/internal/service/requests"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
-	"net/http"
 )
 
 func Logout(w http.ResponseWriter, r *http.Request) {
@@ -22,8 +23,13 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
+	if refreshToken == nil {
+		Log(r).Info("no token was found in db")
+		ape.RenderErr(w, problems.NotFound())
+		return
+	}
 
-	err = helpers.CheckRefreshToken(refreshToken.Token, refreshToken.OwnerId)
+	err = helpers.CheckValidityAndOwnerForRefreshToken(refreshToken.Token, refreshToken.OwnerId, JwtParams(r).Secret)
 	if err != nil {
 		Log(r).WithError(err).Info("something wrong with refresh token")
 		ape.RenderErr(w, problems.BadRequest(err)...)

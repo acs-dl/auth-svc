@@ -1,54 +1,140 @@
 package helpers
 
 import (
-	"errors"
+	"encoding/json"
 	"github.com/golang-jwt/jwt"
-	"github.com/mhrynenko/jwt_service/internal/data"
-	"time"
+	"gitlab.com/distributed_lab/acs/auth/internal/data"
+	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 
-const tmpSecret = "my secret key"
-
-func GenerateAccessToken(user data.User) (string, error) {
+func GenerateAccessToken(dataToGenerate data.GenerateTokens) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["exp"] = time.Now().Add(10 * time.Minute).Unix()
-	claims["owner_id"] = user.Id
-	claims["email"] = user.Email
+	_, err := setMapClaimsFromStructure(dataToGenerate, token.Claims.(jwt.MapClaims))
+	if err != nil {
+		return "", errors.New("failed to set claims")
+	}
 
-	return token.SignedString([]byte(tmpSecret))
+	return token.SignedString([]byte(dataToGenerate.Secret))
 }
 
-func GenerateRefreshToken(user data.User) (string, error, jwt.MapClaims) {
+func GenerateRefreshToken(dataToGenerate data.GenerateTokens) (string, error, *data.JwtClaims) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	claims["exp"] = time.Now().Add(24 * time.Hour).Unix()
-	claims["owner_id"] = user.Id
-	claims["email"] = user.Email
 
-	signedToken, err := token.SignedString([]byte(tmpSecret))
+	claimsStruct, err := setMapClaimsFromStructure(dataToGenerate, claims)
+	if err != nil {
+		return "", errors.New("failed to set claims"), nil
+	}
 
-	return signedToken, err, claims
+	signedToken, err := token.SignedString([]byte(dataToGenerate.Secret))
+	if err != nil {
+		return "", errors.Wrap(err, "failed to get signed string"), nil
+	}
+
+	return signedToken, err, claimsStruct
 }
 
-func CheckRefreshToken(tokenStr string, ownerId int64) error {
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("unexpected signing method")
-		}
-
-		return []byte(tmpSecret), nil
-	})
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		if int64(claims["owner_id"].(float64)) != ownerId {
-			return errors.New("invalid token")
-		}
+func CheckValidityAndOwnerForRefreshToken(tokenStr string, ownerId int64, secret string) error {
+	token, err := parse(tokenStr, []byte(secret))
+	if err != nil {
+		return errors.Wrap(err, "some error while parsing jwt token")
 	}
 
 	if !token.Valid {
 		return errors.New("invalid token")
 	}
 
-	return err
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return errors.New("invalid token")
+	}
+
+	claimsStruct, err := getClaimsStructureFromMap(claims)
+	if err != nil {
+		return errors.Wrap(err, "failed to get claims structure from map")
+	}
+
+	if claimsStruct.OwnerId != ownerId {
+		return errors.New("invalid token")
+	}
+
+	return nil
+}
+
+func parse(tokenStr string, secret []byte) (*jwt.Token, error) {
+	return jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+
+		return secret, nil
+	})
+}
+
+func CheckTokenValidity(tokenStr string, secret string) (*jwt.Token, error) {
+	token, err := parse(tokenStr, []byte(secret))
+	if err != nil {
+		return nil, errors.Wrap(err, "some error while parsing jwt token")
+	}
+
+	if !token.Valid {
+		return nil, errors.New("invalid token")
+	}
+
+	return token, nil
+}
+
+func RetrieveClaimsFromJwtString(tokenStr string, secret string) (*data.JwtClaims, error) {
+	token, err := CheckTokenValidity(tokenStr, secret)
+	if err != nil {
+		return nil, errors.New("failed to check token validity")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, errors.New("invalid token")
+	}
+
+	claimsStruct, err := getClaimsStructureFromMap(claims)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get claims structure from map")
+	}
+
+	return claimsStruct, err
+}
+
+func getClaimsStructureFromMap(claims jwt.MapClaims) (*data.JwtClaims, error) {
+	jsonClaims, err := json.Marshal(claims)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to marshal claims")
+	}
+
+	var claimsStruct data.JwtClaims
+	err = json.Unmarshal(jsonClaims, &claimsStruct)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to unmarshal claims")
+	}
+
+	return &claimsStruct, nil
+}
+
+func setMapClaimsFromStructure(dataToGenerate data.GenerateTokens, claims jwt.MapClaims) (*data.JwtClaims, error) {
+	claimsStruct := data.JwtClaims{
+		ExpiresAt:        dataToGenerate.AccessLife,
+		OwnerId:          dataToGenerate.User.Id,
+		Email:            dataToGenerate.User.Email,
+		ModulePermission: dataToGenerate.PermissionsString,
+	}
+
+	jsonClaims, err := json.Marshal(claimsStruct)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to marshal claims")
+	}
+
+	err = json.Unmarshal(jsonClaims, &claims)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to unmarshal claims")
+	}
+
+	return &claimsStruct, nil
 }

@@ -1,8 +1,8 @@
 package cli
 
 import (
-	"github.com/mhrynenko/jwt_service/internal/assets"
-	"github.com/mhrynenko/jwt_service/internal/config"
+	"gitlab.com/distributed_lab/acs/auth/internal/assets"
+	"gitlab.com/distributed_lab/acs/auth/internal/config"
 
 	migrate "github.com/rubenv/sql-migrate"
 	"gitlab.com/distributed_lab/logan/v3/errors"

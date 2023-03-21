@@ -4,7 +4,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/mhrynenko/jwt_service/internal/config"
+	"gitlab.com/distributed_lab/acs/auth/internal/config"
 
 	"gitlab.com/distributed_lab/kit/copus/types"
 	"gitlab.com/distributed_lab/logan/v3"

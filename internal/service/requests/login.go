@@ -2,10 +2,11 @@ package requests
 
 import (
 	"encoding/json"
-	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/mhrynenko/jwt_service/resources"
-	"gitlab.com/distributed_lab/logan/v3/errors"
 	"net/http"
+
+	validation "github.com/go-ozzo/ozzo-validation"
+	"gitlab.com/distributed_lab/acs/auth/resources"
+	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 
 type LoginRequest struct {
@@ -15,7 +16,7 @@ type LoginRequest struct {
 func NewLoginRequest(r *http.Request) (LoginRequest, error) {
 	var request LoginRequest
 
-	if err := json.NewDecoder(r.Body).Decode(&request.Data); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return request, errors.Wrap(err, " failed to unmarshal")
 	}
 
@@ -23,17 +24,8 @@ func NewLoginRequest(r *http.Request) (LoginRequest, error) {
 }
 
 func (r *LoginRequest) validate() error {
-	return mergeErrors(validation.Errors{
-		"attributes": validation.Validate(&r.Data.Attributes, validation.Required),
-	}).Filter()
-}
-
-func mergeErrors(validationErrors ...validation.Errors) validation.Errors {
-	result := make(validation.Errors)
-	for _, errs := range validationErrors {
-		for key, err := range errs {
-			result[key] = err
-		}
-	}
-	return result
+	return validation.Errors{
+		"email":    validation.Validate(&r.Data.Attributes.Email, validation.Required),
+		"password": validation.Validate(&r.Data.Attributes.Password, validation.Required),
+	}.Filter()
 }
