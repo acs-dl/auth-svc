@@ -8,6 +8,9 @@ type ResourceType string
 
 // List of ResourceType
 const (
-	REFRESH ResourceType = "refresh"
-	LOGIN   ResourceType = "login"
+	ACCESS_REFRESH_TOKENS ResourceType = "access_refresh_tokens"
+	LOGIN                 ResourceType = "login"
+	MODULE_PERMISSION     ResourceType = "module_permission"
+	USER_PERMISSION       ResourceType = "user_permission"
+	REFRESH               ResourceType = "refresh"
 )
