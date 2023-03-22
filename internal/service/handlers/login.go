@@ -1,9 +1,10 @@
 package handlers
 
 import (
+	"net/http"
+
 	"gitlab.com/distributed_lab/acs/auth/internal/service/models"
 	"gitlab.com/distributed_lab/logan/v3/errors"
-	"net/http"
 
 	"gitlab.com/distributed_lab/acs/auth/internal/data"
 	"gitlab.com/distributed_lab/acs/auth/internal/service/helpers"
@@ -28,7 +29,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	permissionsString, err := getPermissionsString(PermissionUsersQ(r), PermissionsQ(r), user.Id)
+	permissionsString, err := getPermissionsString(PermissionsQ(r), user.Status)
 	if err != nil {
 		Log(r).WithError(err).Info("failed to create permissions string")
 		ape.RenderErr(w, problems.InternalError())
@@ -80,13 +81,13 @@ func checkUserAndPassword(request requests.LoginRequest, usersQ data.Users) (*da
 	return user, nil
 }
 
-func getPermissionsString(permissionsUsersQ data.PermissionUsers, permissionsQ data.Permissions, userId int64) (string, error) {
-	permissions, err := permissionsUsersQ.FilterByUserId(userId).Select()
+func getPermissionsString(permissionsQ data.Permissions, userStatus data.UserStatus) (string, error) {
+	permissions, err := permissionsQ.WithModules().FilterByStatus(userStatus).Select()
 	if err != nil {
 		return "", errors.Wrap(err, "failed to get user permissions")
 	}
 
-	permissionsString, err := helpers.CreatePermissionsString(permissions, permissionsQ)
+	permissionsString, err := helpers.CreatePermissionsString(permissions)
 	if err != nil {
 		return "", errors.Wrap(err, "failed to get create user permissions string")
 	}

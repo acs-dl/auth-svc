@@ -1,15 +1,22 @@
 package service
 
 import (
+	"context"
+
 	"github.com/go-chi/chi"
 	"gitlab.com/distributed_lab/acs/auth/internal/data/postgres"
 	"gitlab.com/distributed_lab/acs/auth/internal/service/handlers"
-	middleware "gitlab.com/distributed_lab/acs/auth/middlewares"
+	"gitlab.com/distributed_lab/acs/auth/internal/service/receiver"
+	"gitlab.com/distributed_lab/acs/auth/internal/service/sender"
 	"gitlab.com/distributed_lab/ape"
 )
 
 func (s *service) router() chi.Router {
 	r := chi.NewRouter()
+	ctx := context.Background()
+
+	s.startSender(ctx)
+	s.startReceiver(ctx)
 
 	r.Use(
 		ape.RecoverMiddleware(s.log),
@@ -20,7 +27,6 @@ func (s *service) router() chi.Router {
 			handlers.CtxUsersQ(postgres.NewUsersQ(s.cfg.DB())),
 			handlers.CtxModulesQ(postgres.NewModulesQ(s.cfg.DB())),
 			handlers.CtxPermissionsQ(postgres.NewPermissionsQ(s.cfg.DB())),
-			handlers.CtxPermissionUsersQ(postgres.NewPermissionUsersQ(s.cfg.DB())),
 			handlers.CtxRefreshTokensQ(postgres.NewRefreshTokensQ(s.cfg.DB())),
 		),
 	)
@@ -41,23 +47,17 @@ func (s *service) router() chi.Router {
 		r.Route("/validate", func(r chi.Router) {
 			r.Post("/", handlers.Validate)
 		})
-
-		r.Route("/module", func(r chi.Router) {
-			r.Post("/", handlers.AddModule)
-			r.Route("/{name}", func(r chi.Router) {
-				r.Get("/", handlers.GetModule)
-				r.Delete("/", handlers.DeleteModule)
-
-				r.Delete("/{permission_name}", handlers.DeletePermission)
-			})
-		})
-
-		r.Route("/permission", func(r chi.Router) {
-			r.Use(middleware.CheckHost("localhost:7000"))
-			r.Post("/", handlers.AddPermissionUser)
-			r.Delete("/", handlers.DeletePermissionUser)
-		})
 	})
 
 	return r
+}
+
+func (s *service) startReceiver(ctx context.Context) {
+	s.log.Info("Starting receiver")
+	receiver.Run(ctx, s.cfg)
+}
+
+func (s *service) startSender(ctx context.Context) {
+	s.log.Info("Starting sender")
+	sender.Run(ctx, s.cfg)
 }

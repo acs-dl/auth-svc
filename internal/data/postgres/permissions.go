@@ -13,14 +13,20 @@ import (
 
 const permissionsTableName = "permissions"
 
-var permissionsColumns = []string{"permissions.id", "permissions.module_id", "permissions.name"}
+var (
+	permissionsColumns = []string{
+		permissionsTableName + ".id",
+		permissionsTableName + ".module_id",
+		permissionsTableName + ".name",
+		permissionsTableName + ".status",
+	}
+	selectedPermissionsTable = sq.Select(permissionsColumns...).From(permissionsTableName)
+)
 
 type PermissionsQ struct {
 	db  *pgdb.DB
 	sql sq.SelectBuilder
 }
-
-var selectedPermissionsTable = sq.Select(permissionsColumns...).From(permissionsTableName)
 
 func NewPermissionsQ(db *pgdb.DB) data.Permissions {
 	return &PermissionsQ{
@@ -33,20 +39,14 @@ func (q *PermissionsQ) New() data.Permissions {
 	return NewPermissionsQ(q.db)
 }
 
-func (q *PermissionsQ) Create(permission data.Permission) (*data.Permission, error) {
+func (q *PermissionsQ) Upsert(permission data.Permission) error {
 	clauses := structs.Map(permission)
 
-	query := sq.Insert(permissionsTableName).SetMap(clauses).Suffix("ON CONFLICT (module_id, name) DO NOTHING")
+	query := sq.Insert(permissionsTableName).SetMap(clauses).Suffix("ON CONFLICT (module_id, name, status) DO NOTHING")
 
 	err := q.db.Exec(query)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to exec insert")
-	}
 
-	var result data.Permission
-	err = q.db.Get(&result, selectedPermissionsTable.Where(sq.Eq{"name": permission.Name}))
-
-	return &result, err
+	return err
 }
 
 func (q *PermissionsQ) Select() ([]data.ModulePermission, error) {
@@ -95,6 +95,12 @@ func (q *PermissionsQ) FilterByModuleName(moduleName string) data.Permissions {
 	return q
 }
 
+func (q *PermissionsQ) FilterByStatus(status data.UserStatus) data.Permissions {
+	q.sql = q.sql.Where(sq.Eq{fmt.Sprintf("%s.status", permissionsTableName): status})
+
+	return q
+}
+
 func (q *PermissionsQ) FilterByPermissionId(permissionId int64) data.Permissions {
 	q.sql = q.sql.Where(sq.Eq{fmt.Sprintf("%s.id", permissionsTableName): permissionId})
 
@@ -109,7 +115,7 @@ func (q *PermissionsQ) ResetFilters() data.Permissions {
 
 func (q *PermissionsQ) WithModules() data.Permissions {
 	q.sql = sq.Select().Columns(fmt.Sprintf("%s.id", permissionsTableName), fmt.Sprintf("%s.module_id", permissionsTableName)).
-		Column("permissions.name as permission_name").From(permissionsTableName)
+		Column(permissionsTableName + ".name as permission_name").From(permissionsTableName)
 	q.sql = q.sql.
 		LeftJoin(
 			fmt.Sprintf(

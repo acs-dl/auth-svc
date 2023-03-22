@@ -5,6 +5,11 @@ log:
 db:
   url: postgres://max:pass@localhost:5435/jwt_server?sslmode=disable
 
+amqp:
+  topic: "auth"
+  publisher: "amqp://guest:guest@localhost:5672/" #module_publisher
+  subscriber: "amqp://guest:guest@localhost:5672/" #module_receiver
+
 listener:
   addr: :7000
 

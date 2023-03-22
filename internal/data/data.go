@@ -1,5 +1,10 @@
 package data
 
+const (
+	ModuleName     = "auth"
+	TokenRegExpStr = "/^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)/gm"
+)
+
 type GenerateTokens struct {
 	User              User
 	AccessLife        int64
@@ -14,4 +19,14 @@ type JwtClaims struct {
 	ModulePermission string `json:"module.permission"`
 }
 
-const TokenRegExpStr = "/^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)/gm"
+type ModulePayload struct {
+	RequestId string `json:"request_id"`
+	Action    string `json:"action"`
+
+	//other fields that are required for module
+	ModulePermissions ModulePermissions `json:"module_permissions,omitempty"`
+	ModuleName        string            `json:"module_name"`
+}
+
+type StatusPermission map[string]string
+type ModulePermissions map[string]StatusPermission

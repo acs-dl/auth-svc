@@ -10,7 +10,5 @@ type ResourceType string
 const (
 	ACCESS_REFRESH_TOKENS ResourceType = "access_refresh_tokens"
 	LOGIN                 ResourceType = "login"
-	MODULE_PERMISSION     ResourceType = "module_permission"
-	USER_PERMISSION       ResourceType = "user_permission"
 	REFRESH               ResourceType = "refresh"
 )

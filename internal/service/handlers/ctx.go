@@ -17,7 +17,6 @@ const (
 	usersCtxKey
 	modulesCtxKey
 	permissionsCtxKey
-	PermissionUsersCtxKey
 	refreshTokensCtxKey
 	jwtParamsCtxKey
 )
@@ -59,16 +58,6 @@ func ModulesQ(r *http.Request) data.Modules {
 func CtxModulesQ(entry data.Modules) func(context.Context) context.Context {
 	return func(ctx context.Context) context.Context {
 		return context.WithValue(ctx, modulesCtxKey, entry)
-	}
-}
-
-func PermissionUsersQ(r *http.Request) data.PermissionUsers {
-	return r.Context().Value(PermissionUsersCtxKey).(data.PermissionUsers).New()
-}
-
-func CtxPermissionUsersQ(entry data.PermissionUsers) func(context.Context) context.Context {
-	return func(ctx context.Context) context.Context {
-		return context.WithValue(ctx, PermissionUsersCtxKey, entry)
 	}
 }
 

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+
 	sq "github.com/Masterminds/squirrel"
 	"github.com/fatih/structs"
 	"gitlab.com/distributed_lab/acs/auth/internal/data"
@@ -31,20 +32,14 @@ func (q *ModulesQ) New() data.Modules {
 	return NewModulesQ(q.db)
 }
 
-func (q *ModulesQ) Create(module data.Module) (*data.Module, error) {
+func (q *ModulesQ) Upsert(module data.Module) error {
 	clauses := structs.Map(module)
 
 	query := sq.Insert(modulesTableName).SetMap(clauses).Suffix("ON CONFLICT (name) DO NOTHING")
 
 	err := q.db.Exec(query)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to exec insert")
-	}
 
-	var result data.Module
-	err = q.db.Get(&result, selectedModulesTable.Where(sq.Eq{"name": module.Name}))
-
-	return &result, err
+	return err
 }
 
 func (q *ModulesQ) Select() ([]data.Module, error) {

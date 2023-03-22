@@ -1,9 +1,10 @@
 package handlers
 
 import (
+	"net/http"
+
 	"gitlab.com/distributed_lab/acs/auth/internal/service/models"
 	"gitlab.com/distributed_lab/logan/v3/errors"
-	"net/http"
 
 	"gitlab.com/distributed_lab/acs/auth/internal/data"
 	"gitlab.com/distributed_lab/acs/auth/internal/service/helpers"
@@ -27,16 +28,22 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	permissionsString, err := getPermissionsString(PermissionUsersQ(r), PermissionsQ(r), refreshToken.OwnerId)
+	user, err := UsersQ(r).FilterById(refreshToken.OwnerId).Get()
 	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to get permissions string")
+		Log(r).WithError(err).Error(err, "failed to get user")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
-	user, err := UsersQ(r).FilterById(refreshToken.OwnerId).Get()
+	if user == nil {
+		Log(r).Error("no such user")
+		ape.RenderErr(w, problems.NotFound())
+		return
+	}
+
+	permissionsString, err := getPermissionsString(PermissionsQ(r), user.Status)
 	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to get user")
+		Log(r).WithError(err).Error(err, "failed to get permissions string")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}

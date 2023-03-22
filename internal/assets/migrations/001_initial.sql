@@ -1,102 +1,60 @@
 -- +migrate Up
 
-CREATE TABLE IF NOT EXISTS users (
-    id bigint PRIMARY KEY,
-    email text NOT NULL,
-    password text NOT NULL
+create type users_status_enum as enum ('super_admin', 'admin', 'user');
+
+create table if not exists users (
+    id bigint primary key,
+    email text not null,
+    password text not null,
+    status users_status_enum not null
 );
 
-INSERT INTO users (id, email, password)
-VALUES (1, 'serhii.pomohaiev@distributedlab.com', '$2b$10$ggulBRryhFGQEbaPX76oGeZ1EgduENOtSZWSe3d693z27X33Zt4Xe');
+insert into users (id, email, password, status)
+values (1, 'serhii.pomohaiev@distributedlab.com', '$2b$10$ggulBRryhFGQEbaPX76oGeZ1EgduENOtSZWSe3d693z27X33Zt4Xe', 'super_admin');
 
-CREATE TABLE IF NOT EXISTS refresh_tokens (
-    token text PRIMARY KEY,
-    owner_id INT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    valid_till INT NOT NULL
+create table if not exists refresh_tokens (
+    token text primary key,
+    owner_id int not null references users (id) on delete cascade,
+    valid_till int not null
 );
 
-CREATE TABLE IF NOT EXISTS modules (
-    id bigserial PRIMARY KEY,
-    name text UNIQUE NOT NULL
+create index if not exists refresh_tokens_token_idx on refresh_tokens(token);
+
+create table if not exists modules (
+    id bigserial primary key,
+    name text unique not null
 );
-INSERT INTO modules VALUES (1, 'gitlab');
-INSERT INTO modules VALUES (2, 'identity');
-INSERT INTO modules VALUES (3, 'orchestrator');
-INSERT INTO modules VALUES (4, 'github');
-INSERT INTO modules VALUES (5, 'telegram');
-INSERT INTO modules VALUES (6, 'unverified');
-INSERT INTO modules VALUES (7, 'mail');
-INSERT INTO modules VALUES (8, 'role');
 
-CREATE INDEX IF NOT EXISTS module_namex ON modules(name);
+create index if not exists module_name_idx on modules(name);
 
-CREATE TABLE IF NOT EXISTS permissions (
-    id bigserial PRIMARY KEY,
-    module_id bigint NOT NULL,
-    name text NOT NULL,
+create table if not exists permissions (
+    id bigserial primary key,
+    module_id bigint not null,
+    name text not null,
+    status users_status_enum not null,
 
-    UNIQUE(module_id, name),
-    FOREIGN KEY(module_id) REFERENCES modules(id) ON DELETE CASCADE
+    unique(module_id, name, status),
+    foreign key(module_id) references modules(id) on delete cascade
 );
-INSERT INTO permissions VALUES (1, 1, 'Guest');
-INSERT INTO permissions VALUES (2, 1, 'Reporter');
-INSERT INTO permissions VALUES (3, 1, 'Developer');
-INSERT INTO permissions VALUES (4, 1, 'Maintainer');
-INSERT INTO permissions VALUES (5, 1, 'Owner');
 
-INSERT INTO permissions VALUES (6, 2, 'read');
-INSERT INTO permissions VALUES (7, 2, 'write');
+create index if not exists permissions_moduleid_idx on permissions(module_id);
+create index if not exists permissions_status_idx on permissions(status);
 
-INSERT INTO permissions VALUES (8, 3, 'read');
-INSERT INTO permissions VALUES (9, 3, 'write');
-
-INSERT INTO permissions VALUES (10, 4, 'Read');
-INSERT INTO permissions VALUES (11, 4, 'Triage');
-INSERT INTO permissions VALUES (12, 4, 'Write');
-INSERT INTO permissions VALUES (13, 4, 'Maintain');
-INSERT INTO permissions VALUES (14, 4, 'Admin');
-INSERT INTO permissions VALUES (15, 4, 'Member');
-
-INSERT INTO permissions VALUES (16, 5, 'Admin');
-INSERT INTO permissions VALUES (17, 5, 'Member');
-
-INSERT INTO permissions VALUES (18, 6, 'read');
-INSERT INTO permissions VALUES (19, 6, 'write');
-
-INSERT INTO permissions VALUES (20, 7, 'read');
-INSERT INTO permissions VALUES (21, 7, 'write');
-
-INSERT INTO permissions VALUES (22, 8, 'read');
-INSERT INTO permissions VALUES (23, 8, 'write');
-
-CREATE INDEX IF NOT EXISTS permissions_moduleid_name_idx ON permissions(module_id, name);
-
-CREATE TABLE IF NOT EXISTS permissions_users (
-    permission_id bigint NOT NULL,
-    user_id bigint NOT NULL,
-
-    FOREIGN KEY(permission_id) REFERENCES permissions(id) ON DELETE CASCADE,
-    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-INSERT INTO permissions_users VALUES (5, 1);
-INSERT INTO permissions_users VALUES (7, 1);
-INSERT INTO permissions_users VALUES (9, 1);
-INSERT INTO permissions_users VALUES (14, 1);
-INSERT INTO permissions_users VALUES (16, 1);
-INSERT INTO permissions_users VALUES (19, 1);
-INSERT INTO permissions_users VALUES (21, 1);
-INSERT INTO permissions_users VALUES (23, 1);
-
-CREATE INDEX IF NOT EXISTS user_idx ON permissions_users(user_id);
 
 -- +migrate Down
 
-DROP TABLE IF EXISTS refresh_tokens;
-DROP TABLE IF EXISTS permissions_users;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS permissions;
-DROP TABLE IF EXISTS modules;
+drop index if exists permissions_moduleid_idx;
+drop index if exists permissions_status_idx;
 
-DROP INDEX IF EXISTS module_namex;
-DROP INDEX IF EXISTS permissions_moduleid_name_idx;
-DROP INDEX IF EXISTS user_idx;
+drop table if exists permissions;
+
+drop index if exists module_name_idx;
+
+drop table if exists modules;
+
+drop index if exists refresh_tokens_token_idx;
+
+drop table if exists refresh_tokens;
+drop table if exists users;
+
+drop type if exists users_status_enum;
