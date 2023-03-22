@@ -63,16 +63,20 @@ func (q *ModulesQ) GetByName(name string) (*data.Module, error) {
 }
 
 func (q *ModulesQ) Delete(moduleName string) error {
-	query := sq.Delete(modulesTableName).Where(sq.Eq{"name": moduleName})
+	var deleted []data.Module
 
-	result, err := q.db.ExecWithResult(query)
+	query := sq.Delete(modulesTableName).
+		Where(sq.Eq{
+			"name": moduleName,
+		}).
+		Suffix("RETURNING *")
+
+	err := q.db.Select(&deleted, query)
 	if err != nil {
 		return err
 	}
-
-	affectedRows, _ := result.RowsAffected()
-	if affectedRows == 0 {
-		return errors.New("no such module")
+	if len(deleted) == 0 {
+		return errors.Errorf("no rows with `%s` name", moduleName)
 	}
 
 	return nil

@@ -72,18 +72,21 @@ func (q *PermissionsQ) Get() (*data.ModulePermission, error) {
 }
 
 func (q *PermissionsQ) Delete(permission data.Permission) error {
-	query := sq.Delete(permissionsTableName).Where(
-		sq.Eq{"name": permission.Name},
-		sq.Eq{"module_id": permission.ModuleId})
+	var deleted []data.Permission
 
-	result, err := q.db.ExecWithResult(query)
+	query := sq.Delete(permissionsTableName).
+		Where(sq.Eq{
+			"name":      permission.Name,
+			"module_id": permission.ModuleId,
+		}).
+		Suffix("RETURNING *")
+
+	err := q.db.Select(&deleted, query)
 	if err != nil {
 		return err
 	}
-
-	affectedRows, _ := result.RowsAffected()
-	if affectedRows == 0 {
-		return errors.New("no such permission")
+	if len(deleted) == 0 {
+		return errors.Errorf("no rows with `%s` name", permission.Name)
 	}
 
 	return nil

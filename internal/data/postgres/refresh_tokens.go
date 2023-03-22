@@ -53,16 +53,20 @@ func (q *RefreshTokensQ) Get() (*data.RefreshToken, error) {
 }
 
 func (q *RefreshTokensQ) Delete(token string) error {
-	query := sq.Delete(refreshTokensTableName).Where("token = ?", token)
+	var deleted []data.RefreshToken
 
-	result, err := q.db.ExecWithResult(query)
+	query := sq.Delete(refreshTokensTableName).
+		Where(sq.Eq{
+			"token": token,
+		}).
+		Suffix("RETURNING *")
+
+	err := q.db.Select(&deleted, query)
 	if err != nil {
 		return err
 	}
-
-	affectedRows, _ := result.RowsAffected()
-	if affectedRows == 0 {
-		return errors.New("no such token")
+	if len(deleted) == 0 {
+		return errors.Errorf("no such token")
 	}
 
 	return nil
