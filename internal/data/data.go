@@ -2,7 +2,7 @@ package data
 
 const (
 	ModuleName     = "auth"
-	TokenRegExpStr = "/^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)/gm"
+	TokenRegExpStr = `/^([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)/gm`
 )
 
 type GenerateTokens struct {
