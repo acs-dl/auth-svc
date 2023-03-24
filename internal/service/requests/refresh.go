@@ -2,9 +2,7 @@ package requests
 
 import (
 	"encoding/json"
-	"gitlab.com/distributed_lab/acs/auth/internal/data"
 	"net/http"
-	"regexp"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 	"gitlab.com/distributed_lab/acs/auth/resources"
@@ -27,6 +25,7 @@ func NewRefreshRequest(r *http.Request) (RefreshRequest, error) {
 
 func (r *RefreshRequest) validate() error {
 	return validation.Errors{
-		"token": validation.Validate(&r.Data.Attributes.Token, validation.Required, validation.Match(regexp.MustCompile(data.TokenRegExpStr))),
+		//"token": validation.Validate(&r.Data.Attributes.Token, validation.Required, validation.Match(regexp.MustCompile(data.TokenRegExpStr))),
+		"token": validation.Validate(&r.Data.Attributes.Token, validation.Required),
 	}.Filter()
 }
