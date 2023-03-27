@@ -39,6 +39,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	access, refresh, claims, err := generateTokens(data.GenerateTokens{
 		User:              *user,
 		AccessLife:        helpers2.ParseDurationStringToUnix(JwtParams(r).AccessLife),
+		RefreshLife:       helpers2.ParseDurationStringToUnix(JwtParams(r).RefreshLife),
 		Secret:            JwtParams(r).Secret,
 		PermissionsString: permissionsString,
 	})
