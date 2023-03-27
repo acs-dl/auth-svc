@@ -23,14 +23,14 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 
 	refreshToken, err := checkRefreshToken(RefreshTokensQ(r), request.Data.Attributes.Token, JwtParams(r).Secret)
 	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to check refresh token")
+		Log(r).WithError(err).Error(err, " failed to check refresh token")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
 	user, err := UsersQ(r).FilterById(refreshToken.OwnerId).Get()
 	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to get user")
+		Log(r).WithError(err).Error(err, " failed to get user")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
@@ -43,7 +43,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 
 	permissionsString, err := getPermissionsString(PermissionsQ(r), user.Status)
 	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to get permissions string")
+		Log(r).WithError(err).Error(err, " failed to get permissions string")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
@@ -51,18 +51,19 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 	access, refresh, claims, err := generateTokens(data.GenerateTokens{
 		User:              *user,
 		AccessLife:        helpers.ParseDurationStringToUnix(JwtParams(r).AccessLife),
+		RefreshLife:       helpers.ParseDurationStringToUnix(JwtParams(r).RefreshLife),
 		Secret:            JwtParams(r).Secret,
 		PermissionsString: permissionsString,
 	})
 	if err != nil {
-		Log(r).WithError(err).Info("failed to generate access and refresh tokens")
+		Log(r).WithError(err).Info(" failed to generate access and refresh tokens")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
 	err = RefreshTokensQ(r).Delete(refreshToken.Token)
 	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to delete old refresh token")
+		Log(r).WithError(err).Error(err, " failed to delete old refresh token")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
@@ -75,7 +76,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 
 	err = RefreshTokensQ(r).Create(newRefreshToken)
 	if err != nil {
-		Log(r).WithError(err).Error(err, "failed to create instance of refresh token")
+		Log(r).WithError(err).Error(err, " failed to create instance of refresh token")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}

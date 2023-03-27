@@ -8,6 +8,7 @@ const (
 type GenerateTokens struct {
 	User              User
 	AccessLife        int64
+	RefreshLife       int64
 	Secret            string
 	PermissionsString string
 }

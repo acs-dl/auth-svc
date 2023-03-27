@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"encoding/json"
+
 	"github.com/golang-jwt/jwt"
 	"gitlab.com/distributed_lab/acs/auth/internal/data"
 	"gitlab.com/distributed_lab/logan/v3/errors"
@@ -9,9 +10,9 @@ import (
 
 func GenerateAccessToken(dataToGenerate data.GenerateTokens) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
-	_, err := setMapClaimsFromStructure(dataToGenerate, token.Claims.(jwt.MapClaims))
+	_, err := setMapClaimsFromStructure(dataToGenerate, dataToGenerate.AccessLife, token.Claims.(jwt.MapClaims))
 	if err != nil {
-		return "", errors.New("failed to set claims")
+		return "", errors.Wrap(err, " failed to set claims")
 	}
 
 	return token.SignedString([]byte(dataToGenerate.Secret))
@@ -21,9 +22,9 @@ func GenerateRefreshToken(dataToGenerate data.GenerateTokens) (string, error, *d
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 
-	claimsStruct, err := setMapClaimsFromStructure(dataToGenerate, claims)
+	claimsStruct, err := setMapClaimsFromStructure(dataToGenerate, dataToGenerate.RefreshLife, claims)
 	if err != nil {
-		return "", errors.New("failed to set claims"), nil
+		return "", errors.Wrap(err, " failed to set claims"), nil
 	}
 
 	signedToken, err := token.SignedString([]byte(dataToGenerate.Secret))
@@ -118,9 +119,9 @@ func getClaimsStructureFromMap(claims jwt.MapClaims) (*data.JwtClaims, error) {
 	return &claimsStruct, nil
 }
 
-func setMapClaimsFromStructure(dataToGenerate data.GenerateTokens, claims jwt.MapClaims) (*data.JwtClaims, error) {
+func setMapClaimsFromStructure(dataToGenerate data.GenerateTokens, expiresAt int64, claims jwt.MapClaims) (*data.JwtClaims, error) {
 	claimsStruct := data.JwtClaims{
-		ExpiresAt:        dataToGenerate.AccessLife,
+		ExpiresAt:        expiresAt,
 		OwnerId:          dataToGenerate.User.Id,
 		Email:            dataToGenerate.User.Email,
 		ModulePermission: dataToGenerate.PermissionsString,
