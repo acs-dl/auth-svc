@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"gitlab.com/distributed_lab/acs/auth/internal/service/helpers"
+	"gitlab.com/distributed_lab/acs/auth/internal/service/api/helpers"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
 )

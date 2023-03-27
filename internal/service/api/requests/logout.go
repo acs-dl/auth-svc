@@ -2,9 +2,10 @@ package requests
 
 import (
 	"encoding/json"
-	"gitlab.com/distributed_lab/acs/auth/internal/data"
 	"net/http"
 	"regexp"
+
+	"gitlab.com/distributed_lab/acs/auth/internal/data"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 	"gitlab.com/distributed_lab/acs/auth/resources"

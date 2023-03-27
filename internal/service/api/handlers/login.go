@@ -3,12 +3,12 @@ package handlers
 import (
 	"net/http"
 
-	"gitlab.com/distributed_lab/acs/auth/internal/service/models"
+	helpers2 "gitlab.com/distributed_lab/acs/auth/internal/service/api/helpers"
+	"gitlab.com/distributed_lab/acs/auth/internal/service/api/models"
+	"gitlab.com/distributed_lab/acs/auth/internal/service/api/requests"
 	"gitlab.com/distributed_lab/logan/v3/errors"
 
 	"gitlab.com/distributed_lab/acs/auth/internal/data"
-	"gitlab.com/distributed_lab/acs/auth/internal/service/helpers"
-	"gitlab.com/distributed_lab/acs/auth/internal/service/requests"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
 	"golang.org/x/crypto/bcrypt"
@@ -38,7 +38,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	access, refresh, claims, err := generateTokens(data.GenerateTokens{
 		User:              *user,
-		AccessLife:        helpers.ParseDurationStringToUnix(JwtParams(r).AccessLife),
+		AccessLife:        helpers2.ParseDurationStringToUnix(JwtParams(r).AccessLife),
 		Secret:            JwtParams(r).Secret,
 		PermissionsString: permissionsString,
 	})
@@ -87,7 +87,7 @@ func getPermissionsString(permissionsQ data.Permissions, userStatus data.UserSta
 		return "", errors.Wrap(err, "failed to get user permissions")
 	}
 
-	permissionsString, err := helpers.CreatePermissionsString(permissions)
+	permissionsString, err := helpers2.CreatePermissionsString(permissions)
 	if err != nil {
 		return "", errors.Wrap(err, "failed to get create user permissions string")
 	}
@@ -96,12 +96,12 @@ func getPermissionsString(permissionsQ data.Permissions, userStatus data.UserSta
 }
 
 func generateTokens(dataToGenerate data.GenerateTokens) (access, refresh string, claims *data.JwtClaims, err error) {
-	access, err = helpers.GenerateAccessToken(dataToGenerate)
+	access, err = helpers2.GenerateAccessToken(dataToGenerate)
 	if err != nil {
 		return "", "", nil, errors.Wrap(err, "failed to create access token")
 	}
 
-	refresh, err, claims = helpers.GenerateRefreshToken(dataToGenerate)
+	refresh, err, claims = helpers2.GenerateRefreshToken(dataToGenerate)
 	if err != nil {
 		return "", "", nil, errors.Wrap(err, "failed to create refresh token")
 	}

@@ -3,12 +3,12 @@ package handlers
 import (
 	"net/http"
 
-	"gitlab.com/distributed_lab/acs/auth/internal/service/models"
+	helpers2 "gitlab.com/distributed_lab/acs/auth/internal/service/api/helpers"
+	"gitlab.com/distributed_lab/acs/auth/internal/service/api/models"
+	"gitlab.com/distributed_lab/acs/auth/internal/service/api/requests"
 	"gitlab.com/distributed_lab/logan/v3/errors"
 
 	"gitlab.com/distributed_lab/acs/auth/internal/data"
-	"gitlab.com/distributed_lab/acs/auth/internal/service/helpers"
-	"gitlab.com/distributed_lab/acs/auth/internal/service/requests"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
 )
@@ -50,8 +50,8 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 
 	access, refresh, claims, err := generateTokens(data.GenerateTokens{
 		User:              *user,
-		AccessLife:        helpers.ParseDurationStringToUnix(JwtParams(r).AccessLife),
-		RefreshLife:       helpers.ParseDurationStringToUnix(JwtParams(r).RefreshLife),
+		AccessLife:        helpers2.ParseDurationStringToUnix(JwtParams(r).AccessLife),
+		RefreshLife:       helpers2.ParseDurationStringToUnix(JwtParams(r).RefreshLife),
 		Secret:            JwtParams(r).Secret,
 		PermissionsString: permissionsString,
 	})
@@ -95,7 +95,7 @@ func checkRefreshToken(refreshTokensQ data.RefreshTokens, token, secret string) 
 		return nil, errors.Errorf("no token was found in db")
 	}
 
-	err = helpers.CheckValidityAndOwnerForRefreshToken(refreshToken.Token, refreshToken.OwnerId, secret)
+	err = helpers2.CheckValidityAndOwnerForRefreshToken(refreshToken.Token, refreshToken.OwnerId, secret)
 	if err != nil {
 		return nil, errors.Wrap(err, "something wrong with refresh token")
 	}

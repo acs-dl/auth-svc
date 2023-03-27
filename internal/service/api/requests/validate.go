@@ -2,11 +2,12 @@ package requests
 
 import (
 	"errors"
-	validation "github.com/go-ozzo/ozzo-validation"
-	"gitlab.com/distributed_lab/acs/auth/internal/data"
 	"net/http"
 	"regexp"
 	"strings"
+
+	validation "github.com/go-ozzo/ozzo-validation"
+	"gitlab.com/distributed_lab/acs/auth/internal/data"
 )
 
 type ValidateRequest struct {

@@ -14,23 +14,19 @@ import (
 
 const serviceName = data.ModuleName + "-worker"
 
-type Worker interface {
-	Run(ctx context.Context)
-}
-
-type worker struct {
+type Worker struct {
 	logger         *logan.Entry
 	refreshTokensQ data.RefreshTokens
 }
 
-func NewWorker(cfg config.Config) Worker {
-	return &worker{
+func NewWorker(cfg config.Config) *Worker {
+	return &Worker{
 		logger:         cfg.Log().WithField("runner", serviceName),
 		refreshTokensQ: postgres.NewRefreshTokensQ(cfg.DB()),
 	}
 }
 
-func (w *worker) Run(ctx context.Context) {
+func (w *Worker) Run(ctx context.Context) {
 	running.WithBackOff(
 		ctx,
 		w.logger,
@@ -42,7 +38,7 @@ func (w *worker) Run(ctx context.Context) {
 	)
 }
 
-func (w *worker) processWork(_ context.Context) error {
+func (w *Worker) processWork(_ context.Context) error {
 	w.logger.Info("started worker")
 
 	err := w.removeExpiredTokens()
@@ -54,7 +50,7 @@ func (w *worker) processWork(_ context.Context) error {
 	return nil
 }
 
-func (w *worker) removeExpiredTokens() error {
+func (w *Worker) removeExpiredTokens() error {
 	w.logger.Info("started removing expired tokens")
 
 	tokens, err := w.refreshTokensQ.FilterByValidTill(time.Now().Unix()).Select()
