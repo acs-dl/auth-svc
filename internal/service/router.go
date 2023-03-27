@@ -5,9 +5,10 @@ import (
 
 	"github.com/go-chi/chi"
 	"gitlab.com/distributed_lab/acs/auth/internal/data/postgres"
+	"gitlab.com/distributed_lab/acs/auth/internal/receiver"
+	"gitlab.com/distributed_lab/acs/auth/internal/sender"
 	"gitlab.com/distributed_lab/acs/auth/internal/service/handlers"
-	"gitlab.com/distributed_lab/acs/auth/internal/service/receiver"
-	"gitlab.com/distributed_lab/acs/auth/internal/service/sender"
+	"gitlab.com/distributed_lab/acs/auth/internal/worker"
 	"gitlab.com/distributed_lab/ape"
 )
 
@@ -17,6 +18,7 @@ func (s *service) router() chi.Router {
 
 	s.startSender(ctx)
 	s.startReceiver(ctx)
+	s.startWorker(ctx)
 
 	r.Use(
 		ape.RecoverMiddleware(s.log),
@@ -60,4 +62,9 @@ func (s *service) startReceiver(ctx context.Context) {
 func (s *service) startSender(ctx context.Context) {
 	s.log.Info("Starting sender")
 	sender.Run(ctx, s.cfg)
+}
+
+func (s *service) startWorker(ctx context.Context) {
+	s.log.Info("Starting worker")
+	worker.Run(ctx, s.cfg)
 }

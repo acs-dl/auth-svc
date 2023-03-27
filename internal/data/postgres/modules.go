@@ -12,7 +12,10 @@ import (
 
 const modulesTableName = "modules"
 
-var modulesColumns = []string{"modules.id", "modules.name"}
+var modulesColumns = []string{
+	modulesTableName + ".id",
+	modulesTableName + ".name",
+}
 
 type ModulesQ struct {
 	db  *pgdb.DB

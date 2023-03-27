@@ -40,6 +40,14 @@ func (q *RefreshTokensQ) Create(token data.RefreshToken) error {
 	return err
 }
 
+func (q *RefreshTokensQ) Select() ([]data.RefreshToken, error) {
+	var result []data.RefreshToken
+
+	err := q.db.Select(&result, q.sql)
+
+	return result, err
+}
+
 func (q *RefreshTokensQ) Get() (*data.RefreshToken, error) {
 	var result data.RefreshToken
 
@@ -74,6 +82,12 @@ func (q *RefreshTokensQ) Delete(token string) error {
 
 func (q *RefreshTokensQ) FilterByToken(token string) data.RefreshTokens {
 	q.sql = q.sql.Where(sq.Eq{"token": token})
+
+	return q
+}
+
+func (q *RefreshTokensQ) FilterByValidTill(expiresAtUnix int64) data.RefreshTokens {
+	q.sql = q.sql.Where(sq.Lt{"valid_till": expiresAtUnix})
 
 	return q
 }
