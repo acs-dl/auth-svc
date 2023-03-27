@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add expires at date in structure for creating refresh token
 - Split date from structure in function where converting claims map to claims structure
+- Runners blocked API, so changed runners starting logic
 
 ## [1.0.1] - 2023-03-22
 
