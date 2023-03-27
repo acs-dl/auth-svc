@@ -20,7 +20,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
-	Log(r).Debug(request.Data.Attributes.Token)
+	Log(r).Debugf("Old token: `%s`", request.Data.Attributes.Token)
 	refreshToken, err := checkRefreshToken(RefreshTokensQ(r), request.Data.Attributes.Token, JwtParams(r).Secret)
 	if err != nil {
 		Log(r).WithError(err).Error(err, " failed to check refresh token")
@@ -81,6 +81,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	Log(r).Debugf("New token: `%s`", refresh)
 	ape.Render(w, models.NewAuthTokenResponse(access, refresh))
 }
 
