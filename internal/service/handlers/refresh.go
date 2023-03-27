@@ -20,7 +20,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
-
+	Log(r).Debug(request.Data.Attributes.Token)
 	refreshToken, err := checkRefreshToken(RefreshTokensQ(r), request.Data.Attributes.Token, JwtParams(r).Secret)
 	if err != nil {
 		Log(r).WithError(err).Error(err, " failed to check refresh token")
