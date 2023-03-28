@@ -51,7 +51,7 @@ func (s *Sender) processMessages(ctx context.Context) error {
 
 	err = s.publisher.Publish("orchestrator", msg)
 	if err != nil {
-		return errors.Wrap(err, "failed to process notification: "+msg.UUID)
+		return errors.Wrap(err, "failed to send message: "+msg.UUID)
 	}
 
 	s.log.Infof("finish sending message to get module permissions")

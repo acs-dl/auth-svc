@@ -3,9 +3,6 @@ package requests
 import (
 	"encoding/json"
 	"net/http"
-	"regexp"
-
-	"gitlab.com/distributed_lab/acs/auth/internal/data"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 	"gitlab.com/distributed_lab/acs/auth/resources"
@@ -28,6 +25,7 @@ func NewLogoutRequest(r *http.Request) (LogoutRequest, error) {
 
 func (r *LogoutRequest) validate() error {
 	return validation.Errors{
-		"token": validation.Validate(&r.Data.Attributes.Token, validation.Required, validation.Match(regexp.MustCompile(data.TokenRegExpStr))),
+		//"token": validation.Validate(&r.Data.Attributes.Token, validation.Required, validation.Match(regexp.MustCompile(data.TokenRegExpStr))),
+		"token": validation.Validate(&r.Data.Attributes.Token, validation.Required),
 	}.Filter()
 }

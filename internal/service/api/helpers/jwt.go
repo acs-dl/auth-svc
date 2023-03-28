@@ -89,7 +89,7 @@ func CheckTokenValidity(tokenStr string, secret string) (*jwt.Token, error) {
 func RetrieveClaimsFromJwtString(tokenStr string, secret string) (*data.JwtClaims, error) {
 	token, err := CheckTokenValidity(tokenStr, secret)
 	if err != nil {
-		return nil, errors.New("failed to check token validity")
+		return nil, errors.Wrap(err, "failed to check token validity")
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
