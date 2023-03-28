@@ -15,6 +15,7 @@ type GenerateTokens struct {
 
 type JwtClaims struct {
 	ExpiresAt        int64  `json:"exp"`
+	CreatedAtNano    int64  `json:"iat_nano"`
 	OwnerId          int64  `json:"owner_id"`
 	Email            string `json:"email"`
 	ModulePermission string `json:"module.permission"`

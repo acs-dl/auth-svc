@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/golang-jwt/jwt"
 	"gitlab.com/distributed_lab/acs/auth/internal/data"
@@ -122,6 +123,7 @@ func getClaimsStructureFromMap(claims jwt.MapClaims) (*data.JwtClaims, error) {
 func setMapClaimsFromStructure(dataToGenerate data.GenerateTokens, expiresAt int64, claims jwt.MapClaims) (*data.JwtClaims, error) {
 	claimsStruct := data.JwtClaims{
 		ExpiresAt:        expiresAt,
+		CreatedAtNano:    time.Now().UnixNano(),
 		OwnerId:          dataToGenerate.User.Id,
 		Email:            dataToGenerate.User.Email,
 		ModulePermission: dataToGenerate.PermissionsString,
