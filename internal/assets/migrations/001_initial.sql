@@ -9,7 +9,7 @@ create table if not exists users (
     status users_status_enum not null
 );
 
-insert into users (id, email, password, status)
+-- insert into users (id, email, password, status)
 -- values (1, 'serhii.pomohaiev@distributedlab.com', '$2b$10$ggulBRryhFGQEbaPX76oGeZ1EgduENOtSZWSe3d693z27X33Zt4Xe', 'super_admin');
 
 create table if not exists refresh_tokens (
