@@ -12,31 +12,31 @@ import (
 func Logout(w http.ResponseWriter, r *http.Request) {
 	request, err := requests.NewLogoutRequest(r)
 	if err != nil {
-		Log(r).WithError(err).Info("wrong request")
+		Log(r).WithError(err).Errorf("wrong request")
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
 
-	refreshToken, err := RefreshTokensQ(r).FilterByToken(request.Data.Attributes.Token).Get()
+	refreshToken, err := RefreshTokensQ(r).FilterByTokens(request.Data.Attributes.Token).Get()
 	if err != nil {
 		Log(r).WithError(err).Error(err, "failed to get refresh token")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 	if refreshToken == nil {
-		Log(r).Info("no token was found in db")
+		Log(r).Errorf("no token was found in db")
 		ape.RenderErr(w, problems.NotFound())
 		return
 	}
 
 	err = helpers.CheckValidityAndOwnerForRefreshToken(refreshToken.Token, refreshToken.OwnerId, JwtParams(r).Secret)
 	if err != nil {
-		Log(r).WithError(err).Info("something wrong with refresh token")
+		Log(r).WithError(err).Errorf("something wrong with refresh token")
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
 
-	err = RefreshTokensQ(r).Delete(refreshToken.Token)
+	err = RefreshTokensQ(r).FilterByTokens(refreshToken.Token).Delete()
 	if err != nil {
 		Log(r).WithError(err).Error(err, "failed to delete old refresh token")
 		ape.RenderErr(w, problems.InternalError())

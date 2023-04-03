@@ -16,7 +16,7 @@ import (
 func Refresh(w http.ResponseWriter, r *http.Request) {
 	request, err := requests.NewRefreshRequest(r)
 	if err != nil {
-		Log(r).WithError(err).Info("wrong request")
+		Log(r).WithError(err).Errorf("wrong request")
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
@@ -28,7 +28,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := UsersQ(r).FilterById(refreshToken.OwnerId).Get()
+	user, err := UsersQ(r).FilterByIds(refreshToken.OwnerId).Get()
 	if err != nil {
 		Log(r).WithError(err).Error(err, " failed to get user")
 		ape.RenderErr(w, problems.InternalError())
@@ -56,12 +56,12 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		PermissionsString: permissionsString,
 	})
 	if err != nil {
-		Log(r).WithError(err).Info(" failed to generate access and refresh tokens")
+		Log(r).WithError(err).Errorf(" failed to generate access and refresh tokens")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
-	err = RefreshTokensQ(r).Delete(refreshToken.Token)
+	err = RefreshTokensQ(r).FilterByTokens(refreshToken.Token).Delete()
 	if err != nil {
 		Log(r).WithError(err).Error(err, " failed to delete old refresh token")
 		ape.RenderErr(w, problems.InternalError())
@@ -85,7 +85,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 }
 
 func checkRefreshToken(refreshTokensQ data.RefreshTokens, token, secret string) (*data.RefreshToken, error) {
-	refreshToken, err := refreshTokensQ.FilterByToken(token).Get()
+	refreshToken, err := refreshTokensQ.FilterByTokens(token).Get()
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get refresh token")
 	}

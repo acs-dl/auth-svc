@@ -5,8 +5,10 @@ type Modules interface {
 
 	Upsert(module Module) error
 	Select() ([]Module, error)
-	GetByName(name string) (*Module, error)
-	Delete(moduleName string) error
+	Get() (*Module, error)
+	Delete() error
+
+	FilterByNames(names ...string) Modules
 }
 
 type Module struct {

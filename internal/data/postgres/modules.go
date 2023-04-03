@@ -10,32 +10,36 @@ import (
 	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 
-const modulesTableName = "modules"
+const (
+	modulesTableName  = "modules"
+	modulesIdColumn   = modulesTableName + ".id"
+	modulesNameColumn = modulesTableName + ".name"
+)
 
 var modulesColumns = []string{
-	modulesTableName + ".id",
-	modulesTableName + ".name",
+	modulesIdColumn,
+	modulesNameColumn,
 }
 
 type ModulesQ struct {
-	db  *pgdb.DB
-	sql sq.SelectBuilder
+	db            *pgdb.DB
+	selectBuilder sq.SelectBuilder
+	deleteBuilder sq.DeleteBuilder
 }
-
-var selectedModulesTable = sq.Select("*").From(modulesTableName)
 
 func NewModulesQ(db *pgdb.DB) data.Modules {
 	return &ModulesQ{
-		db:  db.Clone(),
-		sql: selectedModulesTable,
+		db:            db.Clone(),
+		selectBuilder: sq.Select("*").From(modulesTableName),
+		deleteBuilder: sq.Delete(modulesTableName),
 	}
 }
 
-func (q *ModulesQ) New() data.Modules {
+func (q ModulesQ) New() data.Modules {
 	return NewModulesQ(q.db)
 }
 
-func (q *ModulesQ) Upsert(module data.Module) error {
+func (q ModulesQ) Upsert(module data.Module) error {
 	clauses := structs.Map(module)
 
 	query := sq.Insert(modulesTableName).SetMap(clauses).Suffix("ON CONFLICT (name) DO NOTHING")
@@ -45,18 +49,26 @@ func (q *ModulesQ) Upsert(module data.Module) error {
 	return err
 }
 
-func (q *ModulesQ) Select() ([]data.Module, error) {
+func (q ModulesQ) Select() ([]data.Module, error) {
 	var result []data.Module
 
-	err := q.db.Select(&result, q.sql)
+	err := q.db.Select(&result, q.selectBuilder)
 
 	return result, err
 }
 
-func (q *ModulesQ) GetByName(name string) (*data.Module, error) {
+func (q ModulesQ) FilterByNames(names ...string) data.Modules {
+	equalNames := sq.Eq{modulesNameColumn: names}
+	q.selectBuilder = q.selectBuilder.Where(equalNames)
+	q.deleteBuilder = q.deleteBuilder.Where(equalNames)
+
+	return q
+}
+
+func (q ModulesQ) Get() (*data.Module, error) {
 	var result data.Module
 
-	err := q.db.Get(&result, q.sql.Where(sq.Eq{"name": name}))
+	err := q.db.Get(&result, q.selectBuilder)
 
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -65,21 +77,16 @@ func (q *ModulesQ) GetByName(name string) (*data.Module, error) {
 	return &result, err
 }
 
-func (q *ModulesQ) Delete(moduleName string) error {
+func (q ModulesQ) Delete() error {
 	var deleted []data.Module
 
-	query := sq.Delete(modulesTableName).
-		Where(sq.Eq{
-			"name": moduleName,
-		}).
-		Suffix("RETURNING *")
-
-	err := q.db.Select(&deleted, query)
+	err := q.db.Select(&deleted, q.deleteBuilder.Suffix("RETURNING *"))
 	if err != nil {
 		return err
 	}
+
 	if len(deleted) == 0 {
-		return errors.Errorf("no rows with `%s` name", moduleName)
+		return errors.Errorf("no rows deleted")
 	}
 
 	return nil
