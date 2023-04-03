@@ -53,7 +53,7 @@ func (w *Worker) processWork(_ context.Context) error {
 func (w *Worker) removeExpiredTokens() error {
 	w.logger.Info("started removing expired tokens")
 
-	tokens, err := w.refreshTokensQ.FilterByValidTill(time.Now().Unix()).Select()
+	tokens, err := w.refreshTokensQ.FilterByLowerValidTill(time.Now().Unix()).Select()
 	if err != nil {
 		return errors.Wrap(err, " failed to select refresh tokens")
 	}
@@ -61,7 +61,7 @@ func (w *Worker) removeExpiredTokens() error {
 	w.logger.Infof("found `%d` tokens to remove", len(tokens))
 
 	for _, token := range tokens {
-		err = w.refreshTokensQ.Delete(token.Token)
+		err = w.refreshTokensQ.FilterByTokens(token.Token).Delete()
 		if err != nil {
 			return errors.Wrap(err, " failed to delete refresh token")
 		}

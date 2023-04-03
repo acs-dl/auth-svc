@@ -13,7 +13,7 @@ func (p *processor) handleRemoveModuleAction(msg data.ModulePayload) error {
 		return errors.Errorf("module name is empty")
 	}
 
-	err := p.modulesQ.Delete(msg.ModuleName)
+	err := p.modulesQ.FilterByNames(msg.ModuleName).Delete()
 	if err != nil {
 		p.log.WithError(err).Errorf("failed to delete module")
 		return errors.Wrap(err, "failed to delete module")

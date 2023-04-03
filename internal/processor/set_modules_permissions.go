@@ -22,7 +22,7 @@ func (p *processor) handleSetModulesPermissionsAction(msg data.ModulePayload) er
 			return errors.Wrap(err, "failed to upsert module")
 		}
 
-		dbModule, err := p.modulesQ.GetByName(module)
+		dbModule, err := p.modulesQ.FilterByNames(module).Get()
 		if err != nil {
 			p.log.WithError(err).Errorf("failed to get module")
 			return errors.Wrap(err, "failed to get module")

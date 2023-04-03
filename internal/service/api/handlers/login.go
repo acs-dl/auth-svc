@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	helpers2 "gitlab.com/distributed_lab/acs/auth/internal/service/api/helpers"
+	"gitlab.com/distributed_lab/acs/auth/internal/service/api/helpers"
 	"gitlab.com/distributed_lab/acs/auth/internal/service/api/models"
 	"gitlab.com/distributed_lab/acs/auth/internal/service/api/requests"
 	"gitlab.com/distributed_lab/logan/v3/errors"
@@ -17,34 +17,34 @@ import (
 func Login(w http.ResponseWriter, r *http.Request) {
 	request, err := requests.NewLoginRequest(r)
 	if err != nil {
-		Log(r).WithError(err).Info("wrong request")
+		Log(r).WithError(err).Errorf("wrong request")
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
 
 	user, err := checkUserAndPassword(request, UsersQ(r))
 	if err != nil {
-		Log(r).WithError(err).Info("failed to check user and password")
+		Log(r).WithError(err).Errorf("failed to check user and password")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
 	permissionsString, err := getPermissionsString(PermissionsQ(r), user.Status)
 	if err != nil {
-		Log(r).WithError(err).Info("failed to create permissions string")
+		Log(r).WithError(err).Errorf("failed to create permissions string")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
 	access, refresh, claims, err := generateTokens(data.GenerateTokens{
 		User:              *user,
-		AccessLife:        helpers2.ParseDurationStringToUnix(JwtParams(r).AccessLife),
-		RefreshLife:       helpers2.ParseDurationStringToUnix(JwtParams(r).RefreshLife),
+		AccessLife:        helpers.ParseDurationStringToUnix(JwtParams(r).AccessLife),
+		RefreshLife:       helpers.ParseDurationStringToUnix(JwtParams(r).RefreshLife),
 		Secret:            JwtParams(r).Secret,
 		PermissionsString: permissionsString,
 	})
 	if err != nil {
-		Log(r).WithError(err).Info("failed to generate access and refresh tokens")
+		Log(r).WithError(err).Errorf("failed to generate access and refresh tokens")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
@@ -66,7 +66,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func checkUserAndPassword(request requests.LoginRequest, usersQ data.Users) (*data.User, error) {
-	user, err := usersQ.FilterByEmail(request.Data.Attributes.Email).Get()
+	user, err := usersQ.FilterByEmails(request.Data.Attributes.Email).Get()
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get user")
 	}
@@ -88,7 +88,7 @@ func getPermissionsString(permissionsQ data.Permissions, userStatus data.UserSta
 		return "", errors.Wrap(err, "failed to get user permissions")
 	}
 
-	permissionsString, err := helpers2.CreatePermissionsString(permissions)
+	permissionsString, err := helpers.CreatePermissionsString(permissions)
 	if err != nil {
 		return "", errors.Wrap(err, "failed to get create user permissions string")
 	}
@@ -97,12 +97,12 @@ func getPermissionsString(permissionsQ data.Permissions, userStatus data.UserSta
 }
 
 func generateTokens(dataToGenerate data.GenerateTokens) (access, refresh string, claims *data.JwtClaims, err error) {
-	access, err = helpers2.GenerateAccessToken(dataToGenerate)
+	access, err = helpers.GenerateAccessToken(dataToGenerate)
 	if err != nil {
 		return "", "", nil, errors.Wrap(err, "failed to create access token")
 	}
 
-	refresh, err, claims = helpers2.GenerateRefreshToken(dataToGenerate)
+	refresh, err, claims = helpers.GenerateRefreshToken(dataToGenerate)
 	if err != nil {
 		return "", "", nil, errors.Wrap(err, "failed to create refresh token")
 	}
