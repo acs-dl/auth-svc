@@ -7,7 +7,6 @@ import (
 	"github.com/fatih/structs"
 	"gitlab.com/distributed_lab/acs/auth/internal/data"
 	"gitlab.com/distributed_lab/kit/pgdb"
-	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 
 const (
@@ -39,7 +38,7 @@ func (q ModulesQ) New() data.Modules {
 	return NewModulesQ(q.db)
 }
 
-func (q ModulesQ) Upsert(module data.Module) error {
+func (q ModulesQ) Insert(module data.Module) error {
 	clauses := structs.Map(module)
 
 	query := sq.Insert(modulesTableName).SetMap(clauses).Suffix("ON CONFLICT (name) DO NOTHING")
@@ -86,7 +85,7 @@ func (q ModulesQ) Delete() error {
 	}
 
 	if len(deleted) == 0 {
-		return errors.Errorf("no rows deleted")
+		return sql.ErrNoRows
 	}
 
 	return nil

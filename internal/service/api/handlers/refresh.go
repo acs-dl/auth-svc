@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	helpers2 "gitlab.com/distributed_lab/acs/auth/internal/service/api/helpers"
+	"gitlab.com/distributed_lab/acs/auth/internal/service/api/helpers"
 	"gitlab.com/distributed_lab/acs/auth/internal/service/api/models"
 	"gitlab.com/distributed_lab/acs/auth/internal/service/api/requests"
 	"gitlab.com/distributed_lab/logan/v3/errors"
@@ -21,7 +21,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	refreshToken, err := checkRefreshToken(RefreshTokensQ(r), request.Data.Attributes.Token, JwtParams(r).Secret)
+	refreshToken, err := checkRefreshToken(RefreshTokensQ(r), request.RefreshToken, JwtParams(r).Secret)
 	if err != nil {
 		Log(r).WithError(err).Error(err, " failed to check refresh token")
 		ape.RenderErr(w, problems.InternalError())
@@ -50,8 +50,8 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 
 	access, refresh, claims, err := generateTokens(data.GenerateTokens{
 		User:              *user,
-		AccessLife:        helpers2.ParseDurationStringToUnix(JwtParams(r).AccessLife),
-		RefreshLife:       helpers2.ParseDurationStringToUnix(JwtParams(r).RefreshLife),
+		AccessLife:        helpers.ParseDurationStringToUnix(JwtParams(r).AccessLife),
+		RefreshLife:       helpers.ParseDurationStringToUnix(JwtParams(r).RefreshLife),
 		Secret:            JwtParams(r).Secret,
 		PermissionsString: permissionsString,
 	})
@@ -81,6 +81,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	helpers.SetTokensCookies(w, access, refresh)
 	ape.Render(w, models.NewAuthTokenResponse(access, refresh))
 }
 
@@ -94,7 +95,7 @@ func checkRefreshToken(refreshTokensQ data.RefreshTokens, token, secret string) 
 		return nil, errors.Errorf("no token was found in db")
 	}
 
-	err = helpers2.CheckValidityAndOwnerForRefreshToken(refreshToken.Token, refreshToken.OwnerId, secret)
+	err = helpers.CheckValidityAndOwnerForRefreshToken(refreshToken.Token, refreshToken.OwnerId, secret)
 	if err != nil {
 		return nil, errors.Wrap(err, "something wrong with refresh token")
 	}

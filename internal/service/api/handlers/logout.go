@@ -17,7 +17,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	refreshToken, err := RefreshTokensQ(r).FilterByTokens(request.Data.Attributes.Token).Get()
+	refreshToken, err := RefreshTokensQ(r).FilterByTokens(request.RefreshToken).Get()
 	if err != nil {
 		Log(r).WithError(err).Error(err, "failed to get refresh token")
 		ape.RenderErr(w, problems.InternalError())
@@ -42,6 +42,8 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
+
+	helpers.ClearTokensCookies(w)
 
 	ape.Render(w, http.StatusOK)
 }

@@ -7,7 +7,6 @@ import (
 	"github.com/fatih/structs"
 	"gitlab.com/distributed_lab/acs/auth/internal/data"
 	"gitlab.com/distributed_lab/kit/pgdb"
-	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 
 const (
@@ -46,7 +45,7 @@ func (q PermissionsQ) New() data.Permissions {
 	return NewPermissionsQ(q.db)
 }
 
-func (q PermissionsQ) Upsert(permission data.Permission) error {
+func (q PermissionsQ) Insert(permission data.Permission) error {
 	clauses := structs.Map(permission)
 
 	query := sq.Insert(permissionsTableName).SetMap(clauses).
@@ -69,7 +68,6 @@ func (q PermissionsQ) Select() ([]data.ModulePermission, error) {
 func (q PermissionsQ) Get() (*data.ModulePermission, error) {
 	var result data.ModulePermission
 
-	q.selectBuilder = q.selectBuilder.GroupBy(permissionsColumns...)
 	err := q.db.Get(&result, q.selectBuilder)
 
 	if err == sql.ErrNoRows {
@@ -88,7 +86,7 @@ func (q PermissionsQ) Delete() error {
 	}
 
 	if len(deleted) == 0 {
-		return errors.Errorf("no rows deleted")
+		return sql.ErrNoRows
 	}
 
 	return nil
@@ -102,7 +100,7 @@ func (q PermissionsQ) FilterByStatus(status data.UserStatus) data.Permissions {
 	return q
 }
 
-func (q PermissionsQ) WithModules() data.Permissions {
+func (q PermissionsQ) IncludeModules() data.Permissions {
 	q.selectBuilder = sq.Select().Columns(permissionsIdColumn, permissionsModuleIdColumn).
 		Column(permissionsNameColumn + " as permission_name").From(permissionsTableName)
 
