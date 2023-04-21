@@ -17,7 +17,6 @@ jwt:
   secret: SuPeR SeCrEt PhRaSe
   refresh_life: 6h
   access_life: 10m5s
-#  access_life: 30s
 
 cop:
   disabled: true
