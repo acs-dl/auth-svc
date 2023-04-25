@@ -64,7 +64,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	helpers.SetTokensCookies(w, access, refresh)
 
-	ape.Render(w, models.NewAuthTokenResponse(access, refresh))
+	ape.Render(w, models.NewAuthTokenResponse(access))
 }
 
 func checkUserAndPassword(request requests.LoginRequest, usersQ data.Users) (*data.User, error) {

@@ -82,7 +82,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helpers.SetTokensCookies(w, access, refresh)
-	ape.Render(w, models.NewAuthTokenResponse(access, refresh))
+	ape.Render(w, models.NewAuthTokenResponse(access))
 }
 
 func checkRefreshToken(refreshTokensQ data.RefreshTokens, token, secret string) (*data.RefreshToken, error) {

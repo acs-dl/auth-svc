@@ -8,9 +8,6 @@ allOf:
         type: object
         required:
           - access
-          - refresh
         properties:
           access:
-            type: string
-          refresh:
             type: string
