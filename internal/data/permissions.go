@@ -3,12 +3,12 @@ package data
 type Permissions interface {
 	New() Permissions
 
-	Upsert(permission Permission) error
+	Insert(permission Permission) error
 	Select() ([]ModulePermission, error)
 	Get() (*ModulePermission, error)
 	Delete() error
 
-	WithModules() Permissions
+	IncludeModules() Permissions
 
 	FilterByStatus(status UserStatus) Permissions
 }

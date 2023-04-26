@@ -5,6 +5,5 @@
 package resources
 
 type AuthTokenAttributes struct {
-	Access  string `json:"access"`
-	Refresh string `json:"refresh"`
+	Access string `json:"access"`
 }

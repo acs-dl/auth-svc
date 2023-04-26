@@ -7,7 +7,6 @@ import (
 	"github.com/fatih/structs"
 	"gitlab.com/distributed_lab/acs/auth/internal/data"
 	"gitlab.com/distributed_lab/kit/pgdb"
-	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 
 const (
@@ -75,7 +74,7 @@ func (q RefreshTokensQ) Delete() error {
 	}
 
 	if len(deleted) == 0 {
-		return errors.Errorf("no such token")
+		return sql.ErrNoRows
 	}
 
 	return nil

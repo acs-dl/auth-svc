@@ -25,7 +25,7 @@ func NewLoginRequest(r *http.Request) (LoginRequest, error) {
 
 func (r *LoginRequest) validate() error {
 	return validation.Errors{
-		"email":    validation.Validate(&r.Data.Attributes.Email, validation.Required),
+		"email":    validation.Validate(&r.Data.Attributes.Email, validation.Required, validation.Length(1, 255)),
 		"password": validation.Validate(&r.Data.Attributes.Password, validation.Required),
 	}.Filter()
 }
