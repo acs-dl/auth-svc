@@ -25,7 +25,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	user, err := checkUserAndPassword(request, UsersQ(r))
 	if err != nil {
 		Log(r).WithError(err).Errorf("failed to check user and password")
-		ape.RenderErr(w, problems.InternalError())
+		ape.RenderErr(w, problems.Unauthorized())
 		return
 	}
 
@@ -62,7 +62,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ape.Render(w, models.NewAuthTokenResponse(access, refresh))
+	helpers.SetTokensCookies(w, access, refresh)
+
+	ape.Render(w, models.NewAuthTokenResponse(access))
 }
 
 func checkUserAndPassword(request requests.LoginRequest, usersQ data.Users) (*data.User, error) {
@@ -83,7 +85,7 @@ func checkUserAndPassword(request requests.LoginRequest, usersQ data.Users) (*da
 }
 
 func getPermissionsString(permissionsQ data.Permissions, userStatus data.UserStatus) (string, error) {
-	permissions, err := permissionsQ.WithModules().FilterByStatus(userStatus).Select()
+	permissions, err := permissionsQ.IncludeModules().FilterByStatus(userStatus).Select()
 	if err != nil {
 		return "", errors.Wrap(err, "failed to get user permissions")
 	}

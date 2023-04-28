@@ -14,7 +14,7 @@ func (p *processor) handleSetModulesPermissionsAction(msg data.ModulePayload) er
 	}
 
 	for module, statusPermissions := range msg.ModulePermissions {
-		err := p.modulesQ.Upsert(data.Module{
+		err := p.modulesQ.Insert(data.Module{
 			Name: module,
 		})
 		if err != nil {
@@ -34,7 +34,7 @@ func (p *processor) handleSetModulesPermissionsAction(msg data.ModulePayload) er
 		}
 
 		for status, permission := range statusPermissions {
-			err = p.permissionsQ.Upsert(data.Permission{
+			err = p.permissionsQ.Insert(data.Permission{
 				ModuleId: dbModule.Id,
 				Name:     permission,
 				Status:   data.UserStatus(status),

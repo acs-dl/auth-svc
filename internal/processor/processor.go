@@ -32,8 +32,12 @@ type processor struct {
 }
 
 var handleActions = map[string]func(proc *processor, msg data.ModulePayload) error{
-	SetModulesPermissionsAction: (*processor).handleSetModulesPermissionsAction,
-	RemoveModuleAction:          (*processor).handleRemoveModuleAction,
+	SetModulesPermissionsAction: func(proc *processor, msg data.ModulePayload) error {
+		return proc.handleSetModulesPermissionsAction(msg)
+	},
+	RemoveModuleAction: func(proc *processor, msg data.ModulePayload) error {
+		return proc.handleRemoveModuleAction(msg)
+	},
 }
 
 func NewProcessor(cfg config.Config) Processor {
