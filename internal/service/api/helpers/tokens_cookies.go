@@ -13,7 +13,7 @@ func SetTokensCookies(w http.ResponseWriter, access, refresh string) {
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   false,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 	}
 
 	http.SetCookie(w, refreshCookie)
@@ -24,7 +24,7 @@ func SetTokensCookies(w http.ResponseWriter, access, refresh string) {
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   false,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 	}
 
 	http.SetCookie(w, accessCookie)
@@ -38,7 +38,7 @@ func ClearTokensCookies(w http.ResponseWriter) {
 		HttpOnly: true,
 		Secure:   false,
 		MaxAge:   -1,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 	}
 
 	http.SetCookie(w, refreshCookie)
@@ -50,7 +50,7 @@ func ClearTokensCookies(w http.ResponseWriter) {
 		HttpOnly: true,
 		Secure:   false,
 		MaxAge:   -1,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 	}
 
 	http.SetCookie(w, accessCookie)
