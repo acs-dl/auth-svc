@@ -4,7 +4,7 @@ post:
   summary: Login user
   operationId: login
   description: Endpoint for signing in service. It takes ... and in case of success it returns 
-    access and refresh tokens. The same refresh token will be saved in database for processing. 
+    access token. The same refresh token will be saved in database for processing. 
     All tokens have its own life period, which are specified in the config file.
   requestBody:
     content:

@@ -4,17 +4,7 @@ post:
   summary: Logout user
   operationId: logout
   description: Endpoint for signing out service. It takes refresh token and in case of success just remove
-    refresh token from the relevant database.
-  requestBody:
-    content:
-      application/json:
-        schema:
-          type: object
-          required:
-            - data
-          properties:
-            data:
-              $ref: "#/components/schemas/Refresh"
+    refresh token from the relevant database. Token must be in http only cookie (set from backend).
   responses:
     '200':
       description: Success

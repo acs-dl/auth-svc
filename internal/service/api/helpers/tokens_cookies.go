@@ -13,7 +13,7 @@ func SetTokensCookies(w http.ResponseWriter, access, refresh string) {
 		Value:    refresh,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   false,
 		SameSite: http.SameSiteStrictMode,
 	}
 
@@ -24,7 +24,7 @@ func SetTokensCookies(w http.ResponseWriter, access, refresh string) {
 		Value:    access,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   false,
 		SameSite: http.SameSiteStrictMode,
 	}
 
@@ -37,7 +37,7 @@ func ClearTokensCookies(w http.ResponseWriter) {
 		Value:    "",
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   false,
 		Expires:  time.Unix(0, 0),
 		SameSite: http.SameSiteStrictMode,
 	}
@@ -49,7 +49,7 @@ func ClearTokensCookies(w http.ResponseWriter) {
 		Value:    "",
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   false,
 		Expires:  time.Unix(0, 0),
 		SameSite: http.SameSiteStrictMode,
 	}
