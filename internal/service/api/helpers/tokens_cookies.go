@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"net/http"
-	"time"
 
 	"gitlab.com/distributed_lab/acs/auth/internal/data"
 )
@@ -38,7 +37,7 @@ func ClearTokensCookies(w http.ResponseWriter) {
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   false,
-		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
 		SameSite: http.SameSiteStrictMode,
 	}
 
@@ -50,7 +49,7 @@ func ClearTokensCookies(w http.ResponseWriter) {
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   false,
-		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
 		SameSite: http.SameSiteStrictMode,
 	}
 
