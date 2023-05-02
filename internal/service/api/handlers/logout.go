@@ -6,7 +6,6 @@ import (
 	"gitlab.com/distributed_lab/acs/auth/internal/service/api/helpers"
 	"gitlab.com/distributed_lab/acs/auth/internal/service/api/requests"
 	"gitlab.com/distributed_lab/ape"
-	"gitlab.com/distributed_lab/ape/problems"
 )
 
 func Logout(w http.ResponseWriter, r *http.Request) {
@@ -14,7 +13,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		Log(r).WithError(err).Errorf("wrong request")
 		helpers.ClearTokensCookies(w)
-		ape.RenderErr(w, problems.BadRequest(err)...)
+		ape.Render(w, http.StatusOK)
 		return
 	}
 
@@ -22,13 +21,13 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		Log(r).WithError(err).Error(err, "failed to get refresh token")
 		helpers.ClearTokensCookies(w)
-		ape.RenderErr(w, problems.InternalError())
+		ape.Render(w, http.StatusOK)
 		return
 	}
 	if refreshToken == nil {
 		Log(r).Errorf("no token was found in db")
 		helpers.ClearTokensCookies(w)
-		ape.RenderErr(w, problems.NotFound())
+		ape.Render(w, http.StatusOK)
 		return
 	}
 
@@ -36,7 +35,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		Log(r).WithError(err).Errorf("something wrong with refresh token")
 		helpers.ClearTokensCookies(w)
-		ape.RenderErr(w, problems.BadRequest(err)...)
+		ape.Render(w, http.StatusOK)
 		return
 	}
 
@@ -44,7 +43,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		Log(r).WithError(err).Error(err, "failed to delete old refresh token")
 		helpers.ClearTokensCookies(w)
-		ape.RenderErr(w, problems.InternalError())
+		ape.Render(w, http.StatusOK)
 		return
 	}
 
