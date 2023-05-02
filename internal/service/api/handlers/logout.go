@@ -31,14 +31,6 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = helpers.CheckValidityAndOwnerForRefreshToken(refreshToken.Token, refreshToken.OwnerId, JwtParams(r).Secret)
-	if err != nil {
-		Log(r).WithError(err).Errorf("something wrong with refresh token")
-		helpers.ClearTokensCookies(w)
-		ape.Render(w, http.StatusOK)
-		return
-	}
-
 	err = RefreshTokensQ(r).FilterByTokens(refreshToken.Token).Delete()
 	if err != nil {
 		Log(r).WithError(err).Error(err, "failed to delete old refresh token")
