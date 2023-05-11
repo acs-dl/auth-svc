@@ -2,11 +2,11 @@ FROM golang:1.18-alpine as buildbase
 
 RUN apk add git build-base
 
-WORKDIR /go/src/gitlab.com/distributed_lab/acs/auth
+WORKDIR /go/src/github.com/acs-dl/auth-svc
 COPY vendor .
 COPY . .
 
-RUN GOOS=linux go build  -o /usr/local/bin/auth /go/src/gitlab.com/distributed_lab/acs/auth
+RUN GOOS=linux go build  -o /usr/local/bin/auth-svc /go/src/github.com/acs-dl/auth-svc-svc
 
 
 FROM alpine:3.9

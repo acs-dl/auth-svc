@@ -1,7 +1,7 @@
 package processor
 
 import (
-	"gitlab.com/distributed_lab/acs/auth/internal/data"
+	"github.com/acs-dl/auth-svc/internal/data"
 	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 

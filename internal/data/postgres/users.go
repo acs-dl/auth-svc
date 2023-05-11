@@ -4,7 +4,7 @@ import (
 	"database/sql"
 
 	sq "github.com/Masterminds/squirrel"
-	"gitlab.com/distributed_lab/acs/auth/internal/data"
+	"github.com/acs-dl/auth-svc/internal/data"
 	"gitlab.com/distributed_lab/kit/pgdb"
 )
 

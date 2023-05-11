@@ -4,13 +4,13 @@ import (
 	"context"
 	"sync"
 
-	"gitlab.com/distributed_lab/acs/auth/internal/receiver"
-	"gitlab.com/distributed_lab/acs/auth/internal/sender"
-	"gitlab.com/distributed_lab/acs/auth/internal/service/api"
-	"gitlab.com/distributed_lab/acs/auth/internal/worker"
+	"github.com/acs-dl/auth-svc/internal/receiver"
+	"github.com/acs-dl/auth-svc/internal/sender"
+	"github.com/acs-dl/auth-svc/internal/service/api"
+	"github.com/acs-dl/auth-svc/internal/worker"
 
-	"gitlab.com/distributed_lab/acs/auth/internal/config"
-	"gitlab.com/distributed_lab/acs/auth/internal/service/types"
+	"github.com/acs-dl/auth-svc/internal/config"
+	"github.com/acs-dl/auth-svc/internal/service/types"
 )
 
 var availableServices = map[string]types.Runner{

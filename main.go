@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"gitlab.com/distributed_lab/acs/auth/internal/cli"
+	"github.com/acs-dl/auth-svc/internal/cli"
 )
 
 func main() {

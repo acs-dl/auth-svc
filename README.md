@@ -1,14 +1,14 @@
-# gitlab.com/distributed_lab/Auth
+# Authorization service
 
 ## Description
 
-process with jwt tokens
+This service is responsible for user authorization and authentication. Uses JWT tokens for authorization.
 
 ## Install
 
   ```
-  git clone gitlab.com/distributed_lab/Auth
-  cd Auth
+  git clone github.com/acs-dl/auth-svc
+  cd auth-svc
   go build main.go
   export KV_VIPER_FILE=./config.yaml
   ./main migrate up
@@ -54,12 +54,3 @@ use `docker run ` with `-p 8080:80` to expose port 80 to 8080
 ### Database
 For services, we do use ***PostgresSQL*** database. 
 You can [install it locally](https://www.postgresql.org/download/) or use [docker image](https://hub.docker.com/_/postgres/).
-
-
-### Third-party services
-
-
-## Contact
-
-Responsible Maksym Hrynenko
-The primary contact for this project is  t.me/laksherie_mx

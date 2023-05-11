@@ -2,12 +2,11 @@ package handlers
 
 import (
 	"context"
+	"gitlab.com/distributed_lab/logan/v3"
 	"net/http"
 
-	"gitlab.com/distributed_lab/acs/auth/internal/config"
-	"gitlab.com/distributed_lab/acs/auth/internal/data"
-
-	"gitlab.com/distributed_lab/logan/v3"
+	"github.com/acs-dl/auth-svc/internal/config"
+	"github.com/acs-dl/auth-svc/internal/data"
 )
 
 type ctxKey int

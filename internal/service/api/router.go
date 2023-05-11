@@ -1,9 +1,9 @@
 package api
 
 import (
+	"github.com/acs-dl/auth-svc/internal/data/postgres"
+	"github.com/acs-dl/auth-svc/internal/service/api/handlers"
 	"github.com/go-chi/chi"
-	"gitlab.com/distributed_lab/acs/auth/internal/data/postgres"
-	"gitlab.com/distributed_lab/acs/auth/internal/service/api/handlers"
 	"gitlab.com/distributed_lab/ape"
 )
 
@@ -23,7 +23,7 @@ func (s *service) router() chi.Router {
 		),
 	)
 
-	r.Route("/integrations/auth", func(r chi.Router) {
+	r.Route("/integrations/auth-svc", func(r chi.Router) {
 		r.Route("/login", func(r chi.Router) {
 			r.Post("/", handlers.Login)
 		})

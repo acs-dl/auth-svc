@@ -2,12 +2,12 @@ package processor
 
 import (
 	"fmt"
-
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"gitlab.com/distributed_lab/acs/auth/internal/config"
-	"gitlab.com/distributed_lab/acs/auth/internal/data"
-	"gitlab.com/distributed_lab/acs/auth/internal/data/postgres"
 	"gitlab.com/distributed_lab/logan/v3"
+
+	"github.com/acs-dl/auth-svc/internal/config"
+	"github.com/acs-dl/auth-svc/internal/data"
+	"github.com/acs-dl/auth-svc/internal/data/postgres"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 

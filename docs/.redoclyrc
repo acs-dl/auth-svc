@@ -1,5 +1,5 @@
 
-apiTitle: gitlab.com/distributed_lab/Auth
+apiTitle: github.com/acs-dl/auth-svc
 splitSpec: true
 codeSamples: false
 swaggerUI: true

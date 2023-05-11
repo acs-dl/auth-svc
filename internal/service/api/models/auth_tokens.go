@@ -1,6 +1,6 @@
 package models
 
-import "gitlab.com/distributed_lab/acs/auth/resources"
+import "github.com/acs-dl/auth-svc/resources"
 
 func NewAuthTokenResponse(access string) resources.AuthTokenResponse {
 	return resources.AuthTokenResponse{

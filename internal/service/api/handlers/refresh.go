@@ -3,12 +3,12 @@ package handlers
 import (
 	"net/http"
 
-	"gitlab.com/distributed_lab/acs/auth/internal/service/api/helpers"
-	"gitlab.com/distributed_lab/acs/auth/internal/service/api/models"
-	"gitlab.com/distributed_lab/acs/auth/internal/service/api/requests"
+	"github.com/acs-dl/auth-svc/internal/service/api/helpers"
+	"github.com/acs-dl/auth-svc/internal/service/api/models"
+	"github.com/acs-dl/auth-svc/internal/service/api/requests"
 	"gitlab.com/distributed_lab/logan/v3/errors"
 
-	"gitlab.com/distributed_lab/acs/auth/internal/data"
+	"github.com/acs-dl/auth-svc/internal/data"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
 )

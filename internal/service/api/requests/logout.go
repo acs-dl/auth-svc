@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"regexp"
 
+	"github.com/acs-dl/auth-svc/internal/data"
 	validation "github.com/go-ozzo/ozzo-validation"
-	"gitlab.com/distributed_lab/acs/auth/internal/data"
 )
 
 type LogoutRequest struct {
