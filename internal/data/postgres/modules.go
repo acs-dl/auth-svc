@@ -2,63 +2,72 @@ package postgres
 
 import (
 	"database/sql"
+
 	sq "github.com/Masterminds/squirrel"
 	"github.com/fatih/structs"
 	"gitlab.com/distributed_lab/acs/auth/internal/data"
 	"gitlab.com/distributed_lab/kit/pgdb"
-	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 
-const modulesTableName = "modules"
+const (
+	modulesTableName  = "modules"
+	modulesIdColumn   = modulesTableName + ".id"
+	modulesNameColumn = modulesTableName + ".name"
+)
 
-var modulesColumns = []string{"modules.id", "modules.name"}
-
-type ModulesQ struct {
-	db  *pgdb.DB
-	sql sq.SelectBuilder
+var modulesColumns = []string{
+	modulesIdColumn,
+	modulesNameColumn,
 }
 
-var selectedModulesTable = sq.Select("*").From(modulesTableName)
+type ModulesQ struct {
+	db            *pgdb.DB
+	selectBuilder sq.SelectBuilder
+	deleteBuilder sq.DeleteBuilder
+}
 
 func NewModulesQ(db *pgdb.DB) data.Modules {
 	return &ModulesQ{
-		db:  db.Clone(),
-		sql: selectedModulesTable,
+		db:            db.Clone(),
+		selectBuilder: sq.Select("*").From(modulesTableName),
+		deleteBuilder: sq.Delete(modulesTableName),
 	}
 }
 
-func (q *ModulesQ) New() data.Modules {
+func (q ModulesQ) New() data.Modules {
 	return NewModulesQ(q.db)
 }
 
-func (q *ModulesQ) Create(module data.Module) (*data.Module, error) {
+func (q ModulesQ) Insert(module data.Module) error {
 	clauses := structs.Map(module)
 
 	query := sq.Insert(modulesTableName).SetMap(clauses).Suffix("ON CONFLICT (name) DO NOTHING")
 
 	err := q.db.Exec(query)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to exec insert")
-	}
 
-	var result data.Module
-	err = q.db.Get(&result, selectedModulesTable.Where(sq.Eq{"name": module.Name}))
-
-	return &result, err
+	return err
 }
 
-func (q *ModulesQ) Select() ([]data.Module, error) {
+func (q ModulesQ) Select() ([]data.Module, error) {
 	var result []data.Module
 
-	err := q.db.Select(&result, q.sql)
+	err := q.db.Select(&result, q.selectBuilder)
 
 	return result, err
 }
 
-func (q *ModulesQ) GetByName(name string) (*data.Module, error) {
+func (q ModulesQ) FilterByNames(names ...string) data.Modules {
+	equalNames := sq.Eq{modulesNameColumn: names}
+	q.selectBuilder = q.selectBuilder.Where(equalNames)
+	q.deleteBuilder = q.deleteBuilder.Where(equalNames)
+
+	return q
+}
+
+func (q ModulesQ) Get() (*data.Module, error) {
 	var result data.Module
 
-	err := q.db.Get(&result, q.sql.Where(sq.Eq{"name": name}))
+	err := q.db.Get(&result, q.selectBuilder)
 
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -67,17 +76,16 @@ func (q *ModulesQ) GetByName(name string) (*data.Module, error) {
 	return &result, err
 }
 
-func (q *ModulesQ) Delete(moduleName string) error {
-	query := sq.Delete(modulesTableName).Where(sq.Eq{"name": moduleName})
+func (q ModulesQ) Delete() error {
+	var deleted []data.Module
 
-	result, err := q.db.ExecWithResult(query)
+	err := q.db.Select(&deleted, q.deleteBuilder.Suffix("RETURNING *"))
 	if err != nil {
 		return err
 	}
 
-	affectedRows, _ := result.RowsAffected()
-	if affectedRows == 0 {
-		return errors.New("no such module")
+	if len(deleted) == 0 {
+		return sql.ErrNoRows
 	}
 
 	return nil

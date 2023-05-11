@@ -4,17 +4,7 @@ post:
   summary: Refresh token
   operationId: refresh
   description:  Endpoint for refreshing jwt token. It takes old refresh token and in case of success creates new token
-    with the same data inside but with extended term.
-  requestBody:
-    content:
-      application/json:
-        schema:
-          type: object
-          required:
-            - data
-          properties:
-            data:
-              $ref: "#/components/schemas/Refresh"
+    with the same data inside but with extended term. Token must be in http only cookie (set from backend).
   responses:
     '200':
       description: Success

@@ -2,67 +2,73 @@ package postgres
 
 import (
 	"database/sql"
-	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/fatih/structs"
 	"gitlab.com/distributed_lab/acs/auth/internal/data"
 	"gitlab.com/distributed_lab/kit/pgdb"
-	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 
-const permissionsTableName = "permissions"
+const (
+	permissionsTableName      = "permissions"
+	permissionsIdColumn       = permissionsTableName + ".id"
+	permissionsModuleIdColumn = permissionsTableName + ".module_id"
+	permissionsNameColumn     = permissionsTableName + ".name"
+	permissionsStatusColumn   = permissionsTableName + ".status"
+)
 
-var permissionsColumns = []string{"permissions.id", "permissions.module_id", "permissions.name"}
+var (
+	permissionsColumns = []string{
+		permissionsIdColumn,
+		permissionsModuleIdColumn,
+		permissionsNameColumn,
+		permissionsStatusColumn,
+	}
+	selectedPermissionsTable = sq.Select(permissionsColumns...).From(permissionsTableName)
+)
 
 type PermissionsQ struct {
-	db  *pgdb.DB
-	sql sq.SelectBuilder
+	db            *pgdb.DB
+	selectBuilder sq.SelectBuilder
+	deleteBuilder sq.DeleteBuilder
 }
-
-var selectedPermissionsTable = sq.Select(permissionsColumns...).From(permissionsTableName)
 
 func NewPermissionsQ(db *pgdb.DB) data.Permissions {
 	return &PermissionsQ{
-		db:  db.Clone(),
-		sql: selectedPermissionsTable,
+		db:            db.Clone(),
+		selectBuilder: selectedPermissionsTable,
+		deleteBuilder: sq.Delete(permissionsTableName),
 	}
 }
 
-func (q *PermissionsQ) New() data.Permissions {
+func (q PermissionsQ) New() data.Permissions {
 	return NewPermissionsQ(q.db)
 }
 
-func (q *PermissionsQ) Create(permission data.Permission) (*data.Permission, error) {
+func (q PermissionsQ) Insert(permission data.Permission) error {
 	clauses := structs.Map(permission)
 
-	query := sq.Insert(permissionsTableName).SetMap(clauses).Suffix("ON CONFLICT (module_id, name) DO NOTHING")
+	query := sq.Insert(permissionsTableName).SetMap(clauses).
+		Suffix("ON CONFLICT (module_id, name, status) DO NOTHING")
 
 	err := q.db.Exec(query)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to exec insert")
-	}
 
-	var result data.Permission
-	err = q.db.Get(&result, selectedPermissionsTable.Where(sq.Eq{"name": permission.Name}))
-
-	return &result, err
+	return err
 }
 
-func (q *PermissionsQ) Select() ([]data.ModulePermission, error) {
+func (q PermissionsQ) Select() ([]data.ModulePermission, error) {
 	var result []data.ModulePermission
 
-	q.sql = q.sql.GroupBy(permissionsColumns...)
-	err := q.db.Select(&result, q.sql)
+	q.selectBuilder = q.selectBuilder.GroupBy(permissionsColumns...)
+	err := q.db.Select(&result, q.selectBuilder)
 
 	return result, err
 }
 
-func (q *PermissionsQ) Get() (*data.ModulePermission, error) {
+func (q PermissionsQ) Get() (*data.ModulePermission, error) {
 	var result data.ModulePermission
 
-	q.sql = q.sql.GroupBy(permissionsColumns...)
-	err := q.db.Get(&result, q.sql)
+	err := q.db.Get(&result, q.selectBuilder)
 
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -71,52 +77,38 @@ func (q *PermissionsQ) Get() (*data.ModulePermission, error) {
 	return &result, err
 }
 
-func (q *PermissionsQ) Delete(permission data.Permission) error {
-	query := sq.Delete(permissionsTableName).Where(
-		sq.Eq{"name": permission.Name},
-		sq.Eq{"module_id": permission.ModuleId})
+func (q PermissionsQ) Delete() error {
+	var deleted []data.Permission
 
-	result, err := q.db.ExecWithResult(query)
+	err := q.db.Select(&deleted, q.deleteBuilder.Suffix("RETURNING *"))
 	if err != nil {
 		return err
 	}
 
-	affectedRows, _ := result.RowsAffected()
-	if affectedRows == 0 {
-		return errors.New("no such permission")
+	if len(deleted) == 0 {
+		return sql.ErrNoRows
 	}
 
 	return nil
 }
 
-func (q *PermissionsQ) FilterByModuleName(moduleName string) data.Permissions {
-	q.sql = q.sql.Where(sq.Eq{fmt.Sprintf("%s.name", modulesTableName): moduleName})
+func (q PermissionsQ) FilterByStatus(status data.UserStatus) data.Permissions {
+	equalStatus := sq.Eq{permissionsStatusColumn: status}
+	q.selectBuilder = q.selectBuilder.Where(equalStatus)
+	q.deleteBuilder = q.deleteBuilder.Where(equalStatus)
 
 	return q
 }
 
-func (q *PermissionsQ) FilterByPermissionId(permissionId int64) data.Permissions {
-	q.sql = q.sql.Where(sq.Eq{fmt.Sprintf("%s.id", permissionsTableName): permissionId})
+func (q PermissionsQ) IncludeModules() data.Permissions {
+	q.selectBuilder = sq.Select().Columns(permissionsIdColumn, permissionsModuleIdColumn).
+		Column(permissionsNameColumn + " as permission_name").From(permissionsTableName)
 
-	return q
-}
-
-func (q *PermissionsQ) ResetFilters() data.Permissions {
-	q.sql = selectedPermissionsTable
-
-	return q
-}
-
-func (q *PermissionsQ) WithModules() data.Permissions {
-	q.sql = sq.Select().Columns(fmt.Sprintf("%s.id", permissionsTableName), fmt.Sprintf("%s.module_id", permissionsTableName)).
-		Column("permissions.name as permission_name").From(permissionsTableName)
-	q.sql = q.sql.
-		LeftJoin(
-			fmt.Sprintf(
-				"%s ON %s.module_id = %s.id ",
-				modulesTableName, permissionsTableName, modulesTableName)).
-		Column(fmt.Sprintf("%s.id", modulesTableName)).
-		Column(fmt.Sprintf("%s.name as module_name", modulesTableName)).
+	q.selectBuilder = q.selectBuilder.
+		LeftJoin(modulesTableName + " ON " + permissionsModuleIdColumn + " = " + modulesIdColumn).
+		Column(modulesIdColumn).
+		Column(modulesNameColumn + " as module_name").
 		GroupBy(modulesColumns...)
+
 	return q
 }

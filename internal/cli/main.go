@@ -1,10 +1,9 @@
 package cli
 
 import (
+	"github.com/alecthomas/kingpin"
 	"gitlab.com/distributed_lab/acs/auth/internal/config"
 	"gitlab.com/distributed_lab/acs/auth/internal/service"
-
-	"github.com/alecthomas/kingpin"
 	"gitlab.com/distributed_lab/kit/kv"
 	"gitlab.com/distributed_lab/logan/v3"
 )

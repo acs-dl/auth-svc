@@ -15,6 +15,7 @@ type Config interface {
 	comfig.Listenerer
 
 	JwtParams() *JwtCfg
+	Amqp() *AmqpData
 }
 
 type config struct {
@@ -25,6 +26,7 @@ type config struct {
 	getter kv.Getter
 
 	jwtCfg comfig.Once
+	amqp   comfig.Once
 }
 
 func New(getter kv.Getter) Config {
