@@ -7,7 +7,7 @@ docker:
   WORKDIR: /go/src/github.com/acs-dl/auth-svc
 git:
   - add: /
-    to: /go/src/gitlab.com/distributed_lab/acs/telegram-module
+    to: /go/src/gitlab.com/distributed_lab/acs/auth-svc
     stageDependencies:
       setup:
         - "**/*"
