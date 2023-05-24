@@ -3,8 +3,9 @@ package sender
 import (
 	"context"
 	"encoding/json"
-	"gitlab.com/distributed_lab/logan/v3"
 	"time"
+
+	"gitlab.com/distributed_lab/logan/v3"
 
 	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
 	"github.com/ThreeDotsLabs/watermill/message"
@@ -21,14 +22,17 @@ const serviceName = data.ModuleName + "-sender"
 type Sender struct {
 	publisher *amqp.Publisher
 	log       *logan.Entry
-	topic     string
+	topics    map[string]string
 }
 
 func NewSender(cfg config.Config) *Sender {
 	return &Sender{
 		publisher: cfg.Amqp().Publisher,
 		log:       logan.New().WithField("service", serviceName),
-		topic:     cfg.Amqp().Topic,
+		topics: map[string]string{
+			data.ModuleName:       cfg.Amqp().Topic,
+			data.OrchestratorName: cfg.Amqp().Orchestrator,
+		},
 	}
 }
 
@@ -49,7 +53,7 @@ func (s *Sender) processMessages(ctx context.Context) error {
 		return errors.Wrap(err, "failed to create message")
 	}
 
-	err = s.publisher.Publish("orchestrator", msg)
+	err = s.publisher.Publish(s.topics[data.OrchestratorName], msg)
 	if err != nil {
 		return errors.Wrap(err, "failed to send message: "+msg.UUID)
 	}
