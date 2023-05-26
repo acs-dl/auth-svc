@@ -10,15 +10,17 @@ import (
 )
 
 type AmqpConfig struct {
-	Topic      string `fig:"topic,required"`
-	Publisher  string `fig:"publisher,required"`
-	Subscriber string `fig:"subscriber,required"`
+	Topic        string `fig:"topic,required"`
+	Publisher    string `fig:"publisher,required"`
+	Subscriber   string `fig:"subscriber,required"`
+	Orchestrator string `fig:"orchestrator,required"`
 }
 
 type AmqpData struct {
-	Topic      string
-	Publisher  *amqp.Publisher
-	Subscriber *amqp.Subscriber
+	Topic        string
+	Orchestrator string
+	Publisher    *amqp.Publisher
+	Subscriber   *amqp.Subscriber
 }
 
 func (c *config) Amqp() *AmqpData {
@@ -36,9 +38,10 @@ func (c *config) Amqp() *AmqpData {
 		}
 
 		return &AmqpData{
-			Topic:      cfg.Topic,
-			Subscriber: createSubscriber(cfg.Subscriber),
-			Publisher:  createPublisher(cfg.Publisher),
+			Topic:        cfg.Topic,
+			Orchestrator: cfg.Orchestrator,
+			Subscriber:   createSubscriber(cfg.Subscriber),
+			Publisher:    createPublisher(cfg.Publisher),
 		}
 	}).(*AmqpData)
 }

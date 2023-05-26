@@ -9,6 +9,7 @@ amqp:
   topic: "auth-svc"
   publisher: "amqp://guest:guest@localhost:5672/" #module_publisher
   subscriber: "amqp://guest:guest@localhost:5672/" #module_receiver
+  orchestrator: "orchestrator"
 
 listener:
   addr: :7000
