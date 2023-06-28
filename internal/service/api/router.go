@@ -23,7 +23,7 @@ func (s *service) router() chi.Router {
 		),
 	)
 
-	r.Route("/integrations/auth-svc", func(r chi.Router) {
+	r.Route("/integrations/auth", func(r chi.Router) {
 		r.Route("/login", func(r chi.Router) {
 			r.Post("/", handlers.Login)
 		})
